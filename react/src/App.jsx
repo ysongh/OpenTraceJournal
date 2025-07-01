@@ -4,7 +4,7 @@ function App() {
 
   return (
     <>
-      <h1>DecentralPrice</h1>
+      <h1 className="text-center">DecentralPrice</h1>
     </>
   )
 }
