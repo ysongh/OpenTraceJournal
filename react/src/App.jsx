@@ -1,5 +1,7 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 
+import Landing from './pages/Landing';
+
 function App() {
 
   return (
@@ -10,10 +12,7 @@ function App() {
           element={<h1>Test</h1>} />
         <Route
           path="/"
-          element={
-            <>
-              <h1>Home</h1>
-            </>} />
+          element={<Landing />} />
       </Routes>
     </HashRouter>
   )
