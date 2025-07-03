@@ -2,6 +2,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
+import MintPaperNFTForm from './pages/MintPaperNFTForm';
 
 function App() {
 
@@ -10,8 +11,8 @@ function App() {
       <Navbar />
       <Routes>
         <Route
-          path="/test"
-          element={<h1>Test</h1>} />
+          path="/mintpapernft"
+          element={<MintPaperNFTForm />} />
         <Route
           path="/"
           element={<Landing />} />
