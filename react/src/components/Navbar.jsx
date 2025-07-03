@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Network } from 'lucide-react';
 
+import { ETHContext } from '../ETHContext';
+
 const Navbar = () => {
+  const { walletAddress, connectWallet } = useContext(ETHContext);
 
   return (
     <nav className="relative z-10 p-6 flex justify-between items-center">
@@ -15,8 +18,11 @@ const Navbar = () => {
           <a href="#features" className="hover:text-purple-300 transition-colors">Features</a>
           <a href="#how-it-works" className="hover:text-purple-300 transition-colors">How It Works</a>
           <a href="#tokenomics" className="hover:text-purple-300 transition-colors">Tokenomics</a>
-          <button className="bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-2 rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105">
-            Launch App
+          <button
+            className="bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-2 rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
+            onClick={connectWallet}
+          >
+            {walletAddress ? walletAddress : 'Connect Wallet'}
           </button>
         </div>
       </nav>
