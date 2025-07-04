@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FileText, Upload, Plus, X, CheckCircle, AlertCircle, Hash, Tag, BookOpen, Globe, Zap, ArrowRight } from 'lucide-react';
 
+import { ETHContext } from '../ETHContext';
+import { useContracts } from '../utils/useContracts';
+
 export default function MintPaperNFTForm() {
+  const { signer } = useContext(ETHContext);
+  const { mintPaper } = useContracts();
+
   const [formData, setFormData] = useState({
     title: '',
     abstractText: '',
@@ -125,15 +131,30 @@ export default function MintPaperNFTForm() {
   };
 
   const handleSubmit = async () => {
-    
-    if (!validateForm()) {
-      return;
-    }
+    // if (!validateForm()) {
+    //   return;
+    // }
 
     setIsSubmitting(true);
+
+    console.log( formData.title,
+      formData.abstractText,
+      formData.ipfsHash,
+      formData.keywords,
+      formData.field,
+      formData.ipfsHash)
     
     // Simulate minting process
     try {
+      await mintPaper(
+        signer,
+        formData.title,
+        formData.abstractText,
+        formData.ipfsHash,
+        formData.keywords,
+        formData.field,
+        formData.ipfsHash
+      );
       await new Promise(resolve => setTimeout(resolve, 2000));
       setIsSuccess(true);
       console.log('Minting paper NFT with data:', formData);
@@ -420,8 +441,7 @@ export default function MintPaperNFTForm() {
               {/* Submit Button */}
               <div className="pt-6">
                 <button
-                  type="submit"
-                  disabled={isSubmitting}
+                  onClick={handleSubmit}
                   className={`w-full py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 ${
                     isSubmitting
                       ? 'bg-gray-600 cursor-not-allowed'
