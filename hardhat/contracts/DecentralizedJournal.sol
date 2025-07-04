@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 /**
  * @title DecentralizedJournal
  * @dev A smart contract for minting academic papers as NFTs in a decentralized journal
- * Authors can mint papers by paying a fee in JournalToken (ERC-20)
+ * Authors can mint papers by paying a fee
  * Paper metadata is stored on-chain with IPFS hash for full content
  */
 contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {    
@@ -17,15 +17,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
 
     // Token counter for unique paper IDs
     uint256 private _tokenIdCounter;
-    
-    // Reference to the platform's ERC-20 token
-    IERC20 public journalToken;
-    
-    // Minting fee in JournalToken (adjustable by DAO)
-    uint256 public mintingFee;
-    
-    // Treasury address to receive minting fees
-    address public treasury;
     
     // Paper metadata structure
     struct PaperMetadata {
@@ -53,7 +44,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         uint256 timestamp
     );
     
-    event MintingFeeUpdated(uint256 oldFee, uint256 newFee);
     event TreasuryUpdated(address oldTreasury, address newTreasury);
     
     // Modifiers
@@ -71,17 +61,8 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
     }
     
     constructor(
-        address _journalToken,
-        uint256 _initialMintingFee,
-        address _treasury,
         address _owner
     ) ERC721("DecentralizedJournal", "DJNL") {
-        require(_journalToken != address(0), "Invalid token address");
-        require(_treasury != address(0), "Invalid treasury address");
-        
-        journalToken = IERC20(_journalToken);
-        mintingFee = _initialMintingFee;
-        treasury = _treasury;
         owner = _owner;
     }
     
@@ -102,18 +83,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         string memory field,
         string memory tokenURI
     ) external nonReentrant validMetadata(title, abstractText, ipfsHash) {
-        // Check if author has sufficient JournalToken balance
-        require(
-            journalToken.balanceOf(msg.sender) >= mintingFee,
-            "Insufficient JournalToken balance"
-        );
-        
-        // Transfer minting fee to treasury
-        require(
-            journalToken.transferFrom(msg.sender, treasury, mintingFee),
-            "Fee transfer failed"
-        );
-        
         // Get next token ID
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter += 1;
@@ -176,37 +145,7 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
     }
     
     // DAO Governance Functions
-    
-    /**
-     * @dev Update minting fee (only owner/DAO)
-     * @param newFee New minting fee in JournalToken
-     */
-    function setMintingFee(uint256 newFee) external onlyOwner {
-        uint256 oldFee = mintingFee;
-        mintingFee = newFee;
-        emit MintingFeeUpdated(oldFee, newFee);
-    }
-    
-    /**
-     * @dev Update treasury address (only owner/DAO)
-     * @param newTreasury New treasury address
-     */
-    function setTreasury(address newTreasury) external onlyOwner {
-        require(newTreasury != address(0), "Invalid treasury address");
-        address oldTreasury = treasury;
-        treasury = newTreasury;
-        emit TreasuryUpdated(oldTreasury, newTreasury);
-    }
-    
-    /**
-     * @dev Update JournalToken address (only owner/DAO)
-     * @param newToken New JournalToken address
-     */
-    function setJournalToken(address newToken) external onlyOwner {
-        require(newToken != address(0), "Invalid token address");
-        journalToken = IERC20(newToken);
-    }
-    
+
     function tokenURI(uint256 tokenId) 
         public 
         view 
