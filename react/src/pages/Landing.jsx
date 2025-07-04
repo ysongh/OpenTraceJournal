@@ -77,7 +77,10 @@ export default function Landing() {
               <span>Start Publishing</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="group border border-white/30 hover:border-purple-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-white/10 transition-all duration-300 flex items-center space-x-2">
+            <button
+              className="group border border-white/30 hover:border-purple-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-white/10 transition-all duration-300 flex items-center space-x-2"
+              onClick={() => navigate("/paperslist")}
+            >
               <span>Explore Papers</span>
               <ExternalLink className="w-5 h-5 group-hover:rotate-45 transition-transform" />
             </button>

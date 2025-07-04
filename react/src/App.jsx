@@ -4,6 +4,7 @@ import { ETHProvider } from './ETHContext';
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
 import MintPaperNFTForm from './pages/MintPaperNFTForm';
+import PapersList from './pages/PapersList';
 
 function App() {
 
@@ -15,6 +16,9 @@ function App() {
           <Route
             path="/mintpapernft"
             element={<MintPaperNFTForm />} />
+          <Route
+            path="/paperslist"
+            element={<PapersList />} />
           <Route
             path="/"
             element={<Landing />} />
