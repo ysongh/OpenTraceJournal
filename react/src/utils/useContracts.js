@@ -24,11 +24,24 @@ export const useContracts = () => {
       for(let i = 0; i < numberOfPapers; i++){
         let paper = await contract.getPaper(i);
         paper = Array.from(paper);
-        newPapers.push(paper);
+        paper.push(Array.from(paper[5]));
+        const formatPaper = {
+          id: i + 1,
+          title: paper[0],
+          abstractText: paper[1],
+          ipfsHash: paper[2],
+          author: paper[3],
+          timestamp: paper[4],
+          keywords: paper[7],
+          field: paper[6],
+        }
+        newPapers.push(formatPaper);
       }
       console.log(newPapers);
+      return newPapers;
     } catch (err) {
       console.error(err);
+      return [];
     }
   }
 

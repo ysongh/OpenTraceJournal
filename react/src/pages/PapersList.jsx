@@ -147,17 +147,17 @@ export default function PapersList() {
   ];
 
   useEffect(() => {
-    if(signer) getPapers(signer);
-  }, [signer]);
-
-  useEffect(() => {
     // Simulate loading
-    setTimeout(() => {
-      setPapers(mockPapers);
+    setTimeout(async () => {
+      if(signer) {
+        const newPapers = await getPapers(signer);
+        setPapers(newPapers);
+      }
+      
       setFilteredPapers(mockPapers);
       setIsLoading(false);
     }, 1000);
-  }, []);
+  }, [signer]);
 
   useEffect(() => {
     let filtered = papers;
@@ -224,18 +224,6 @@ export default function PapersList() {
             <BookOpen className="w-4 h-4 text-purple-400" />
           </div>
           <span className="text-sm text-gray-400">#{paper.id}</span>
-          {paper.verified && (
-            <div className="flex items-center space-x-1 bg-green-500/20 px-2 py-1 rounded-full border border-green-500/30">
-              <Award className="w-3 h-3 text-green-400" />
-              <span className="text-xs text-green-400">Verified</span>
-            </div>
-          )}
-          {paper.trending && (
-            <div className="flex items-center space-x-1 bg-orange-500/20 px-2 py-1 rounded-full border border-orange-500/30">
-              <TrendingUp className="w-3 h-3 text-orange-400" />
-              <span className="text-xs text-orange-400">Trending</span>
-            </div>
-          )}
         </div>
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1">
@@ -257,13 +245,13 @@ export default function PapersList() {
       <div className="flex items-center space-x-2 mb-3">
         <Users className="w-4 h-4 text-gray-400" />
         <span className="text-sm text-gray-300">
-          {paper.authors.join(', ')}
+          {paper.author}
         </span>
       </div>
 
       {/* Abstract */}
       <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
-        {paper.abstract}
+        {paper.abstractText}
       </p>
 
       {/* Keywords */}
@@ -281,22 +269,6 @@ export default function PapersList() {
             +{paper.keywords.length - 3} more
           </span>
         )}
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="text-center">
-          <div className="text-lg font-bold text-purple-400">{formatNumber(paper.citations)}</div>
-          <div className="text-xs text-gray-400">Citations</div>
-        </div>
-        <div className="text-center">
-          <div className="text-lg font-bold text-blue-400">{formatNumber(paper.downloads)}</div>
-          <div className="text-xs text-gray-400">Downloads</div>
-        </div>
-        <div className="text-center">
-          <div className="text-lg font-bold text-green-400">{formatNumber(paper.views)}</div>
-          <div className="text-xs text-gray-400">Views</div>
-        </div>
       </div>
 
       {/* NFT Info */}
