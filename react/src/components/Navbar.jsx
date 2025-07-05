@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Network } from 'lucide-react';
 
+import { formatAddress } from '../utils/format';
 import { ETHContext } from '../ETHContext';
 
 const Navbar = () => {
@@ -22,7 +23,7 @@ const Navbar = () => {
             className="bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-2 rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
             onClick={connectWallet}
           >
-            {walletAddress ? walletAddress : 'Connect Wallet'}
+            {walletAddress ? formatAddress(walletAddress) : 'Connect Wallet'}
           </button>
         </div>
       </nav>

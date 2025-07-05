@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Search, Filter, BookOpen, Users, TrendingUp, Calendar, Tag, Hash, ExternalLink, Heart, Download, Share2, Award, Zap, Eye, MessageCircle, Star, ChevronDown, X, Grid, List } from 'lucide-react';
 
+import { formatAddress } from '../utils/format';
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
 
@@ -245,7 +246,7 @@ export default function PapersList() {
       <div className="flex items-center space-x-2 mb-3">
         <Users className="w-4 h-4 text-gray-400" />
         <span className="text-sm text-gray-300">
-          {paper.author}
+          {formatAddress(paper.author || "")}
         </span>
       </div>
 
