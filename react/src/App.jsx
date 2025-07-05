@@ -25,7 +25,7 @@ function App() {
             path="/paperslist"
             element={<PapersList />} />
           <Route
-            path="/paper"
+            path="/paper/:id"
             element={<PaperDetail />} />
           <Route
             path="/"

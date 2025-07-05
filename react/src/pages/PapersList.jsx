@@ -307,7 +307,7 @@ export default function PapersList() {
           <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
             <Share2 className="w-4 h-4 text-gray-400 hover:text-purple-400 transition-colors" />
           </button>
-          <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" onClick={() => navigate("/paper")}>
+          <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" onClick={() => navigate("/paper/" + paper.id)}>
             <ExternalLink className="w-4 h-4 text-gray-400 hover:text-green-400 transition-colors" />
           </button>
         </div>
@@ -364,7 +364,7 @@ export default function PapersList() {
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-sm font-bold text-green-400">{paper.price}</span>
-              <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" onClick={() => navigate("/paper")}>
+              <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" onClick={() => navigate("/paper/" + paper.id)}>
                 <ExternalLink className="w-4 h-4 text-gray-400 hover:text-purple-400 transition-colors" />
               </button>
             </div>

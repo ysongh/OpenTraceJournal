@@ -45,8 +45,33 @@ export const useContracts = () => {
     }
   }
 
+  const getPaperById = async (signer, id) => {
+    try {
+      const contract = await getDecentralizedJournalContract(signer);
+      let paper = await contract.getPaper(id - 1);
+      paper = Array.from(paper);
+      paper.push(Array.from(paper[5]));
+      const formatPaper = {
+        id: id,
+        title: paper[0],
+        abstractText: paper[1],
+        ipfsHash: paper[2],
+        author: paper[3],
+        timestamp: paper[4],
+        keywords: paper[7],
+        field: paper[6],
+      }
+      console.log(formatPaper);
+      return formatPaper;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
   return {
     mintPaper,
-    getPapers
+    getPapers,
+    getPaperById
   };
 }

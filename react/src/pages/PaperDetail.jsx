@@ -1,11 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Download, Share2, Star, Eye, Quote, Coins, Users, Calendar, 
   Tag, ExternalLink, CheckCircle, AlertCircle, CreditCard, Wallet, 
   Copy, TrendingUp, Award, BookOpen, Hash, Globe, Zap, User, Clock
 } from 'lucide-react';
 
+import { formatAddress } from '../utils/format';
+import { ETHContext } from '../ETHContext';
+import { useContracts } from '../utils/useContracts';
+
 export default function PaperDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { signer } = useContext(ETHContext);
+  const { getPaperById } = useContracts();
+
+  const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [showCitationModal, setShowCitationModal] = useState(false);
   const [citationAmount, setCitationAmount] = useState('5');
@@ -45,6 +56,15 @@ export default function PaperDetail() {
     Chicago: `Chen, Sarah, Michael Rodriguez, and Elena Petrov. "CRISPR-Cas9 Enhanced Metabolic Engineering for Sustainable Biofuel Production in Engineered Microorganisms." DeSci Journal of Synthetic Biology (2024).`,
     Harvard: `Chen, S., Rodriguez, M. and Petrov, E. (2024) 'CRISPR-Cas9 Enhanced Metabolic Engineering for Sustainable Biofuel Production in Engineered Microorganisms', DeSci Journal of Synthetic Biology.`
   };
+
+  useEffect(() => {
+    setTimeout(async () => {
+      if(signer) {
+        const newPaper = await getPaperById(signer, id);
+        setPaperData(newPaper);
+      }
+    }, 1000);
+  }, [signer]);
 
   const handleCitationPayment = async () => {
     setIsProcessing(true);
@@ -95,16 +115,16 @@ export default function PaperDetail() {
           
           {/* Header */}
           <div className="flex items-center space-x-4 mb-8">
-            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" onClick={() => navigate("/paperslist")}>
               <ArrowLeft className="w-6 h-6" />
             </button>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-sm text-purple-300 font-medium">{paper.field}</span>
+                <span className="text-sm text-purple-300 font-medium">{paperData?.field}</span>
                 <span className="text-gray-400">•</span>
-                <span className="text-sm text-gray-400">{paper.publishDate}</span>
+                <span className="text-sm text-gray-400">{paperData?.timestamp}</span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold leading-tight">{paper.title}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold leading-tight">{paperData?.title}</h1>
             </div>
           </div>
 
@@ -174,7 +194,7 @@ export default function PaperDetail() {
                         <BookOpen className="w-5 h-5 text-purple-400" />
                         <span>Abstract</span>
                       </h3>
-                      <p className="text-gray-300 leading-relaxed">{paper.abstract}</p>
+                      <p className="text-gray-300 leading-relaxed">{paperData?.abstractText}</p>
                     </div>
                     
                     <div>
