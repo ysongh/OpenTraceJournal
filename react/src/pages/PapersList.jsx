@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Search, Filter, BookOpen, Users, TrendingUp, Calendar, Tag, Hash, ExternalLink, Heart, Download, Share2, Award, Zap, Eye, MessageCircle, Star, ChevronDown, X, Grid, List } from 'lucide-react';
 
+import { ETHContext } from '../ETHContext';
+import { useContracts } from '../utils/useContracts';
+
 export default function PapersList() {
+  const { signer } = useContext(ETHContext);
+  const { getPapers } = useContracts();
+
   const [papers, setPapers] = useState([]);
   const [filteredPapers, setFilteredPapers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -139,6 +145,10 @@ export default function PapersList() {
     { value: 'rating', label: 'Highest Rated' },
     { value: 'trending', label: 'Trending' }
   ];
+
+  useEffect(() => {
+    if(signer) getPapers(signer);
+  }, [signer]);
 
   useEffect(() => {
     // Simulate loading

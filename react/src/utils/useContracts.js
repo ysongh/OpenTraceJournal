@@ -15,7 +15,25 @@ export const useContracts = () => {
     return createTX;
   }
 
+  const getPapers = async (signer) => {
+    try {
+      const contract = await getDecentralizedJournalContract(signer);
+      const numberOfPapers = await contract.getTotalPapers();
+      console.log(numberOfPapers);
+      const newPapers = [];
+      for(let i = 0; i < numberOfPapers; i++){
+        let paper = await contract.getPaper(i);
+        paper = Array.from(paper);
+        newPapers.push(paper);
+      }
+      console.log(newPapers);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return {
-    mintPaper
+    mintPaper,
+    getPapers
   };
 }
