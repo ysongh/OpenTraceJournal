@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
 import MintPaperNFTForm from './pages/MintPaperNFTForm';
 import PapersList from './pages/PapersList';
+import PaperDetail from './pages/PaperDetail';
 import CreateKey from './pages/CreateKey';
 
 function App() {
@@ -23,6 +24,9 @@ function App() {
           <Route
             path="/paperslist"
             element={<PapersList />} />
+          <Route
+            path="/paper"
+            element={<PaperDetail />} />
           <Route
             path="/"
             element={<Landing />} />

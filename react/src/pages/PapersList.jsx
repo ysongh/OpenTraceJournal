@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Filter, BookOpen, Users, TrendingUp, Calendar, Tag, Hash, ExternalLink, Heart, Download, Share2, Award, Zap, Eye, MessageCircle, Star, ChevronDown, X, Grid, List } from 'lucide-react';
 
 import { formatAddress } from '../utils/format';
@@ -6,6 +7,7 @@ import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
 
 export default function PapersList() {
+  const navigate = useNavigate();
   const { signer } = useContext(ETHContext);
   const { getPapers } = useContracts();
 
@@ -256,7 +258,7 @@ export default function PapersList() {
       </p>
 
       {/* Keywords */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      {/* <div className="flex flex-wrap gap-2 mb-4">
         {paper.keywords.slice(0, 3).map((keyword, index) => (
           <span
             key={index}
@@ -270,7 +272,7 @@ export default function PapersList() {
             +{paper.keywords.length - 3} more
           </span>
         )}
-      </div>
+      </div> */}
 
       {/* NFT Info */}
       <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg p-3 mb-4 border border-purple-500/20">
@@ -305,7 +307,7 @@ export default function PapersList() {
           <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
             <Share2 className="w-4 h-4 text-gray-400 hover:text-purple-400 transition-colors" />
           </button>
-          <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+          <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" onClick={() => navigate("/paper")}>
             <ExternalLink className="w-4 h-4 text-gray-400 hover:text-green-400 transition-colors" />
           </button>
         </div>
@@ -362,7 +364,7 @@ export default function PapersList() {
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-sm font-bold text-green-400">{paper.price}</span>
-              <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+              <button className="p-2 hover:bg-white/10 rounded-lg transition-colors" onClick={() => navigate("/paper")}>
                 <ExternalLink className="w-4 h-4 text-gray-400 hover:text-purple-400 transition-colors" />
               </button>
             </div>
