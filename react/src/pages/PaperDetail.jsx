@@ -15,7 +15,7 @@ export default function PaperDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { signer } = useContext(ETHContext);
-  const { getPaperById } = useContracts();
+  const { getPaperById, payCitation } = useContracts();
 
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -379,7 +379,7 @@ export default function PaperDetail() {
 
       {/* Citation Payment Modal */}
       {showCitationModal && (
-        <CitationPaymentModal />
+        <CitationPaymentModal id={id} signer={signer} payCitation={payCitation} setShowCitationModal={setShowCitationModal} />
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Quote, CheckCircle, Wallet, Copy } from 'lucide-react';
 
-function CitationPaymentModal() {
+function CitationPaymentModal({ id, signer, payCitation, setShowCitationModal }) {
   const [citerTitle, setCiterTitle] = useState('');
   const [citerAuthorName, setCiterAuthorName] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,8 +20,7 @@ function CitationPaymentModal() {
     setIsProcessing(true);
     
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await payCitation(signer, id, citerTitle, citerAuthorName);
       
       setPaymentSuccess(true);
       
