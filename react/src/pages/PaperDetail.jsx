@@ -14,7 +14,7 @@ export default function PaperDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { signer } = useContext(ETHContext);
-  const { getPaperById, payCitation } = useContracts();
+  const { getPaperById, payCitation, getPaperCitations } = useContracts();
 
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -57,6 +57,8 @@ export default function PaperDetail() {
       if(signer) {
         const newPaper = await getPaperById(signer, id);
         setPaperData(newPaper);
+
+        const newCitations = await getPaperCitations(signer, id);
       }
     }, 1000);
   }, [signer]);

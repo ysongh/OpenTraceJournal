@@ -77,10 +77,38 @@ export const useContracts = () => {
     }
   }
 
+  const getPaperCitations = async (signer, id) => {
+    try {
+      const contract = await getDecentralizedJournalContract(signer);
+      let ids = await contract.getPaperCitations(id - 1);
+      ids = Array.from(ids);
+
+      const citations = [];
+      for(let i = 0; i < ids.length; i++){
+        let citation = await contract.getCitation(i);
+        citation = Array.from(citation);
+        console.log(citation);
+        const formatCitation = {
+          id: i + 1,
+          title: citation[3],
+          author: citation[4],
+        }
+        citations.push(formatCitation);
+      }
+
+      console.log(citations);
+      return citations;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
   return {
     mintPaper,
     payCitation,
     getPapers,
-    getPaperById
+    getPaperById,
+    getPaperCitations
   };
 }
