@@ -31,6 +31,7 @@ export const useContracts = () => {
       for(let i = 0; i < numberOfPapers; i++){
         let paper = await contract.getPaper(i);
         paper = Array.from(paper);
+        console.log(paper);
         paper.push(Array.from(paper[5]));
         const formatPaper = {
           id: i + 1,
@@ -39,7 +40,7 @@ export const useContracts = () => {
           ipfsHash: paper[2],
           author: paper[3],
           timestamp: paper[4],
-          keywords: paper[7],
+          keywords: paper[9],
           field: paper[6],
         }
         newPapers.push(formatPaper);
@@ -65,7 +66,7 @@ export const useContracts = () => {
         ipfsHash: paper[2],
         author: paper[3],
         timestamp: paper[4],
-        keywords: paper[7],
+        keywords: paper[9],
         field: paper[6],
       }
       console.log(formatPaper);

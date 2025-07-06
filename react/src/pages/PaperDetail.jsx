@@ -163,7 +163,7 @@ export default function PaperDetail() {
                         <span>Keywords</span>
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {paper.keywords.map((keyword, index) => (
+                        {paperData?.keywords.map((keyword, index) => (
                           <span
                             key={index}
                             className="px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-sm"
