@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, BookOpen, Users, TrendingUp, Calendar, Tag, Hash, ExternalLink, Heart, Download, Share2, Award, Zap, Eye, MessageCircle, Star, ChevronDown, X, Grid, List } from 'lucide-react';
 
-import { formatAddress } from '../utils/format';
+import { formatAddress, formatDate } from '../utils/format';
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
 
@@ -17,7 +17,6 @@ export default function PapersList() {
   const [selectedField, setSelectedField] = useState('all');
   const [sortBy, setSortBy] = useState('citations');
   const [viewMode, setViewMode] = useState('grid');
-  const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Mock data for papers
@@ -201,14 +200,6 @@ export default function PapersList() {
     setFilteredPapers(filtered);
   }, [papers, searchTerm, selectedField, sortBy]);
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
   const formatNumber = (num) => {
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
@@ -293,7 +284,7 @@ export default function PapersList() {
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1">
             <Calendar className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-400">{formatDate(paper.publishedDate)}</span>
+            <span className="text-sm text-gray-400">{formatDate(paper.timestamp)}</span>
           </div>
           <div className="flex items-center space-x-1">
             <Tag className="w-4 h-4 text-gray-400" />

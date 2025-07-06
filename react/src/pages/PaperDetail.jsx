@@ -1,13 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, Download, Share2, Star, Eye, Quote, Coins, Users, Calendar, 
-  Tag, ExternalLink, CheckCircle, AlertCircle, CreditCard, Wallet, 
-  Copy, TrendingUp, Award, BookOpen, Hash, Globe, Zap, User, Clock
+  ArrowLeft, Download, Share2, Star, Eye, Quote, Coins, Users, 
+  Tag, CheckCircle, Copy, TrendingUp, BookOpen, Hash, User
 } from 'lucide-react';
 
 import CitationPaymentModal from '../components/CitationPaymentModal';
-import { formatAddress } from '../utils/format';
+import { formatAddress, formatDate } from '../utils/format';
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
 
@@ -83,7 +82,7 @@ export default function PaperDetail() {
               <div className="flex items-center space-x-2 mb-2">
                 <span className="text-sm text-purple-300 font-medium">{paperData?.field}</span>
                 <span className="text-gray-400">•</span>
-                <span className="text-sm text-gray-400">{paperData?.timestamp}</span>
+                <span className="text-sm text-gray-400">{formatDate(paperData?.timestamp)}</span>
               </div>
               <h1 className="text-2xl md:text-3xl font-bold leading-tight">{paperData?.title}</h1>
             </div>
