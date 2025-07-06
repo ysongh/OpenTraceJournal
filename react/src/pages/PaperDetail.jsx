@@ -331,24 +331,19 @@ export default function PaperDetail() {
                   <span>Authors</span>
                 </h3>
                 <div className="space-y-3">
-                  {paper.authors.map((author, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-white" />
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-sm">{formatAddress(paperData?.author)}</span>
                         </div>
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium text-sm">{author.name}</span>
-                            {author.verified && (
-                              <CheckCircle className="w-4 h-4 text-green-400" />
-                            )}
-                          </div>
-                          <div className="text-xs text-gray-400 font-mono">{author.wallet}</div>
-                        </div>
+                        {/* <div className="text-xs text-gray-400 font-mono">{author.wallet}</div> */}
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
 
