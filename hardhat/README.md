@@ -9,3 +9,6 @@
 
 ## Deploy to localhost
 npx hardhat ignition deploy ./ignition/modules/DecentralizedJournal.js --network localhost
+
+## Deploy to calibration
+npx hardhat ignition deploy ./ignition/modules/DecentralizedJournal.js --network calibration
