@@ -19,6 +19,7 @@ export default function PaperDetail() {
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [showCitationModal, setShowCitationModal] = useState(false);
+  const [citations, setCitations] = useState([]);
 
   // Mock paper data
   const paper = {
@@ -59,6 +60,7 @@ export default function PaperDetail() {
         setPaperData(newPaper);
 
         const newCitations = await getPaperCitations(signer, id);
+        setCitations(newCitations);
       }
     }, 1000);
   }, [signer]);
@@ -132,7 +134,7 @@ export default function PaperDetail() {
 
               {/* Navigation Tabs */}
               <div className="flex space-x-6 border-b border-white/10">
-                {['overview', 'citations', 'metrics'].map((tab) => (
+                {['overview', 'citers', 'metrics'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -207,25 +209,19 @@ export default function PaperDetail() {
                   </div>
                 )}
 
-                {activeTab === 'citations' && (
+                {activeTab === 'citers' && (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">Citation Formats</h3>
-                      <span className="text-sm text-gray-400">{paper.citations} total citations</span>
+                      <h3 className="text-lg font-semibold">Citers list</h3>
+                      <span className="text-sm text-gray-400">{citations.length} total citations</span>
                     </div>
                     
-                    {Object.entries(citationStyles).map(([style, citation]) => (
-                      <div key={style} className="p-4 bg-white/5 rounded-lg border border-white/10">
+                    {citations.map((citation) => (
+                      <div key={citation.id} className="p-4 bg-white/5 rounded-lg border border-white/10">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-purple-300">{style}</span>
-                          <button
-                            onClick={() => copyCitation(style)}
-                            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                          >
-                            <Copy className="w-4 h-4" />
-                          </button>
+                          <span className="font-medium text-purple-300">{citation.title}</span>
                         </div>
-                        <p className="text-sm text-gray-300 leading-relaxed">{citation}</p>
+                        <p className="text-sm text-gray-300 leading-relaxed">{citation.author}</p>
                       </div>
                     ))}
                   </div>
