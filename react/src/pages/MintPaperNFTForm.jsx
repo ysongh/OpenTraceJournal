@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { FileText, Upload, Plus, X, CheckCircle, AlertCircle, Hash, Tag, BookOpen, Globe, Zap, ArrowRight } from 'lucide-react';
+import lighthouse from "@lighthouse-web3/sdk";
 
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
@@ -117,16 +118,27 @@ export default function MintPaperNFTForm() {
     }
   };
 
-  const handleDrop = (e) => {
+  const progressCallback = (progressData) => {
+    let percentageDone =
+      100 - (progressData?.total / progressData?.uploaded)?.toFixed(2)
+    console.log(percentageDone)
+  }
+
+  const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
     
     const files = e.dataTransfer.files;
+
     if (files && files[0]) {
       // Simulate IPFS upload
-      const fakeHash = `Qm${Math.random().toString(36).substr(2, 44)}`;
-      handleInputChange('ipfsHash', fakeHash);
+      const apiKey = import.meta.env.VITE_LIGHTHOUSE_APIKEY;
+
+      const output = await lighthouse.upload(files, apiKey, null, progressCallback);
+      console.log('Visit at https://gateway.lighthouse.storage/ipfs/' + output.data.Hash);
+      
+      handleInputChange('ipfsHash', output.data.Hash);
     }
   };
 
