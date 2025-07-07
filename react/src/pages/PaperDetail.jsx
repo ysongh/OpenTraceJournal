@@ -99,7 +99,7 @@ export default function PaperDetail() {
             <div className="lg:col-span-2 space-y-8">
               
               {/* Stats Bar */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
+              {/* <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div className="text-center">
                     <div className="flex justify-center mb-2">
@@ -130,7 +130,7 @@ export default function PaperDetail() {
                     <div className="text-sm text-gray-400">Rating</div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Navigation Tabs */}
               <div className="flex space-x-6 border-b border-white/10">
@@ -283,7 +283,7 @@ export default function PaperDetail() {
                 
                 <div className="space-y-4">
                   <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
-                    <div className="text-2xl font-bold text-purple-300 mb-1">₮{paper.citationReward}</div>
+                    <div className="text-2xl font-bold text-purple-300 mb-1">0.1 FIL</div>
                     <div className="text-sm text-gray-400">Citation Fee</div>
                   </div>
                   

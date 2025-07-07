@@ -10,7 +10,7 @@ function CitationPaymentModal({ id, signer, payCitation, setShowCitationModal })
   const [selectedCitationStyle, setSelectedCitationStyle] = useState('APA');
 
   const citationStyles = {
-    APA: `Chen, S., Rodriguez, M., & Petrov, E. (2024). CRISPR-Cas9 Enhanced Metabolic Engineering for Sustainable Biofuel Production in Engineered Microorganisms. DeSci Journal of Synthetic Biology.`,
+    APA: `0x0389..9dm3fm (2025). CRISPR-Cas9 Enhanced Metabolic Engineering for Sustainable Biofuel Production in Engineered Microorganisms. DeSci Journal of Synthetic Biology.`,
     MLA: `Chen, Sarah, et al. "CRISPR-Cas9 Enhanced Metabolic Engineering for Sustainable Biofuel Production in Engineered Microorganisms." DeSci Journal of Synthetic Biology, 2024.`,
     Chicago: `Chen, Sarah, Michael Rodriguez, and Elena Petrov. "CRISPR-Cas9 Enhanced Metabolic Engineering for Sustainable Biofuel Production in Engineered Microorganisms." DeSci Journal of Synthetic Biology (2024).`,
     Harvard: `Chen, S., Rodriguez, M. and Petrov, E. (2024) 'CRISPR-Cas9 Enhanced Metabolic Engineering for Sustainable Biofuel Production in Engineered Microorganisms', DeSci Journal of Synthetic Biology.`
@@ -50,7 +50,7 @@ function CitationPaymentModal({ id, signer, payCitation, setShowCitationModal })
             </div>
 
             <div className="space-y-4">
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium mb-2">Citation Amount</label>
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 relative">
@@ -71,7 +71,7 @@ function CitationPaymentModal({ id, signer, payCitation, setShowCitationModal })
                     Default
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium mb-2">Citer Title</label>
@@ -96,16 +96,16 @@ function CitationPaymentModal({ id, signer, payCitation, setShowCitationModal })
               <div className="bg-white/5 p-4 rounded-lg">
                 <div className="flex justify-between items-center text-sm mb-2">
                   <span className="text-gray-400">Citation Fee:</span>
-                  <span>₮{citationAmount}</span>
+                  <span>0.1 FIL</span>
                 </div>
-                <div className="flex justify-between items-center text-sm mb-2">
+                {/* <div className="flex justify-between items-center text-sm mb-2">
                   <span className="text-gray-400">Network Fee:</span>
                   <span>₮0.05</span>
-                </div>
+                </div> */}
                 <div className="border-t border-white/10 pt-2">
                   <div className="flex justify-between items-center font-semibold">
                     <span>Total:</span>
-                    <span className="text-purple-300">₮{(parseFloat(citationAmount) + 0.05).toFixed(2)}</span>
+                    <span className="text-purple-300">0.01 FIL</span>
                   </div>
                 </div>
               </div>

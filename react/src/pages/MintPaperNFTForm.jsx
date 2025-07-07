@@ -131,14 +131,17 @@ export default function MintPaperNFTForm() {
     
     const files = e.dataTransfer.files;
 
+    const fakeHash = `Qm${Math.random().toString(36).substr(2, 44)}`;
+    handleInputChange('ipfsHash', fakeHash);
+
     if (files && files[0]) {
       // Simulate IPFS upload
       const apiKey = import.meta.env.VITE_LIGHTHOUSE_APIKEY;
 
       const output = await lighthouse.upload(files, apiKey, null, progressCallback);
       console.log('Visit at https://gateway.lighthouse.storage/ipfs/' + output.data.Hash);
-      
-      handleInputChange('ipfsHash', output.data.Hash);
+
+      //handleInputChange('ipfsHash', output.data.Hash);
     }
   };
 
@@ -303,7 +306,7 @@ export default function MintPaperNFTForm() {
               <div>
                 <label className="flex items-center space-x-2 text-lg font-semibold mb-3">
                   <Hash className="w-5 h-5 text-purple-400" />
-                  <span>IPFS Hash *</span>
+                  <span>Upload Document *</span>
                 </label>
                 <div className="space-y-4">
                   <div
@@ -319,7 +322,7 @@ export default function MintPaperNFTForm() {
                     <p className="text-gray-300 mb-2">Drag and drop your paper file here</p>
                     <p className="text-gray-500 text-sm">We'll automatically upload to IPFS and generate the hash</p>
                   </div>
-                  <div className="text-center text-gray-400">or</div>
+                  {/* <div className="text-center text-gray-400">or</div>
                   <input
                     type="text"
                     value={formData.ipfsHash}
@@ -328,7 +331,7 @@ export default function MintPaperNFTForm() {
                     className={`w-full p-4 rounded-lg bg-white/10 border ${
                       errors.ipfsHash ? 'border-red-400' : 'border-white/20'
                     } focus:border-purple-400 focus:outline-none transition-colors text-white placeholder-gray-400 font-mono text-sm`}
-                  />
+                  /> */}
                 </div>
                 {errors.ipfsHash && (
                   <p className="mt-2 text-red-400 text-sm flex items-center space-x-1">
@@ -425,7 +428,7 @@ export default function MintPaperNFTForm() {
               </div>
 
               {/* Token URI (Optional) */}
-              <div>
+              {/* <div>
                 <label className="flex items-center space-x-2 text-lg font-semibold mb-3">
                   <Globe className="w-5 h-5 text-purple-400" />
                   <span>Token URI <span className="text-gray-400 font-normal">(Optional)</span></span>
@@ -448,7 +451,7 @@ export default function MintPaperNFTForm() {
                     <span>{errors.tokenURI}</span>
                   </p>
                 )}
-              </div>
+              </div> */}
 
               {/* Submit Button */}
               <div className="pt-6">
