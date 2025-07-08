@@ -468,7 +468,7 @@ export default function PapersList() {
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-400">Total Citations:</span>
               <span className="text-lg font-bold text-purple-400">
-                {formatNumber(filteredPapers.reduce((sum, paper) => sum + paper.citations, 0))}
+                {papers.length}
               </span>
             </div>
           </div>
