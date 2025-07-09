@@ -68,6 +68,7 @@ export const useContracts = () => {
         timestamp: paper[4],
         keywords: paper[9],
         field: paper[6],
+        totalEarnings: paper[8],
       }
       console.log(formatPaper);
       return formatPaper;

@@ -356,7 +356,7 @@ export default function PaperDetail() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-400">Total Earnings:</span>
-                    <span className="text-sm font-semibold text-purple-300">₮{paper.totalEarned}</span>
+                    <span className="text-sm font-semibold text-purple-300">{Number(paperData?.totalEarnings || 0) / 10 ** 18}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-400">Reviews:</span>
