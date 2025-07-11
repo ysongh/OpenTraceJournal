@@ -134,7 +134,7 @@ export default function PaperDetail() {
 
               {/* Navigation Tabs */}
               <div className="flex space-x-6 border-b border-white/10">
-                {['overview', 'citers', 'metrics'].map((tab) => (
+                {['overview', 'citers'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -224,48 +224,6 @@ export default function PaperDetail() {
                         <p className="text-sm text-gray-300 leading-relaxed">{citation.author}</p>
                       </div>
                     ))}
-                  </div>
-                )}
-
-                {activeTab === 'metrics' && (
-                  <div className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Citation Impact</h3>
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Total Citations:</span>
-                            <span className="font-semibold">{paper.citations}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Citation Growth:</span>
-                            <span className="text-green-400 font-semibold">+23% this month</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">H-Index Impact:</span>
-                            <span className="font-semibold">8.5</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Earnings</h3>
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Total Earned:</span>
-                            <span className="font-semibold text-purple-300">₮{paper.totalEarned}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">This Month:</span>
-                            <span className="text-green-400 font-semibold">₮85</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Per Citation:</span>
-                            <span className="font-semibold">₮{paper.citationReward}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
