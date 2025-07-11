@@ -22,6 +22,13 @@ export const useContracts = () => {
     return createTX;
   }
 
+  const setCitationPrice = async (signer, id, amount) => {
+    const contract = await getDecentralizedJournalContract(signer);
+    const createTX = await contract.setCitationPrice(id - 1, amount);
+    await createTX.wait();
+    return createTX;
+  }
+
   const getPapers = async (signer) => {
     try {
       const contract = await getDecentralizedJournalContract(signer);
@@ -108,6 +115,7 @@ export const useContracts = () => {
   return {
     mintPaper,
     payCitation,
+    setCitationPrice,
     getPapers,
     getPaperById,
     getPaperCitations
