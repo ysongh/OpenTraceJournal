@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, Download, Share2, Star, Quote, Coins, Users, 
+  ArrowLeft, Download, DollarSign, Share2, Star, Quote, Coins, Users, 
   Tag, TrendingUp, BookOpen, Hash, User
 } from 'lucide-react';
 
 import CitationPaymentModal from '../components/CitationPaymentModal';
+import CitationFeeModal from '../components/CitationFeeModal';
 import { formatAddress, formatDate } from '../utils/format';
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
@@ -19,7 +20,11 @@ export default function PaperDetail() {
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [showCitationModal, setShowCitationModal] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
   const [citations, setCitations] = useState([]);
+  const [isUpdatingFee, setIsUpdatingFee] = useState(false);
+
+  const currentCitationFee = paperData?.citationFee || 0.1;
 
   // Mock paper data
   const paper = {
@@ -67,6 +72,27 @@ export default function PaperDetail() {
 
   const copyCitation = (style) => {
     navigator.clipboard.writeText(citationStyles[style]);
+  };
+
+  const handleUpdateFee = async (newFee) => {
+    setIsUpdatingFee(true);
+    try {
+      await updateCitationFee(signer, id, newFee);
+      
+      // Update local paper data
+      setPaperData(prev => ({
+        ...prev,
+        citationFee: newFee
+      }));
+      
+      // You might want to show a success message here
+      console.log('Citation fee updated successfully');
+    } catch (error) {
+      console.error('Error updating citation fee:', error);
+      throw error;
+    } finally {
+      setIsUpdatingFee(false);
+    }
   };
 
   return (
@@ -256,6 +282,14 @@ export default function PaperDetail() {
                   <div className="text-xs text-gray-400 text-center">
                     Support the authors by paying for citations
                   </div>
+
+                  <button
+                      onClick={() => setShowFeeModal(true)}
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                    >
+                      <DollarSign className="w-4 h-4" />
+                      <span>Update Citation Fee</span>
+                    </button>
                 </div>
               </div>
 
@@ -330,6 +364,18 @@ export default function PaperDetail() {
       {/* Citation Payment Modal */}
       {showCitationModal && (
         <CitationPaymentModal id={id} signer={signer} payCitation={payCitation} setShowCitationModal={setShowCitationModal} />
+      )}
+
+      {/* Citation Fee Management Modal */}
+      {showFeeModal && (
+        <CitationFeeModal
+          isOpen={showFeeModal}
+          onClose={() => setShowFeeModal(false)}
+          currentFee={currentCitationFee}
+          onUpdateFee={handleUpdateFee}
+          paperTitle={paperData?.title}
+          isUpdating={isUpdatingFee}
+        />
       )}
     </div>
   );
