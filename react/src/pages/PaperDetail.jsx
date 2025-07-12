@@ -1,8 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, Download, Share2, Star, Eye, Quote, Coins, Users, 
-  Tag, CheckCircle, Copy, TrendingUp, BookOpen, Hash, User
+  ArrowLeft, Download, Share2, Star, Quote, Coins, Users, 
+  Tag, TrendingUp, BookOpen, Hash, User
 } from 'lucide-react';
 
 import CitationPaymentModal from '../components/CitationPaymentModal';
@@ -310,7 +310,7 @@ export default function PaperDetail() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-400">Publication Date:</span>
-                    <span className="text-sm">{paper.publishDate}</span>
+                    <span className="text-sm">{formatDate(paperData?.timestamp)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-400">Total Earnings:</span>
