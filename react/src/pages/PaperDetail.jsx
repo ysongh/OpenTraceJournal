@@ -1,8 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, Download, DollarSign, Share2, Star, Quote, Coins, Users, 
-  Tag, TrendingUp, BookOpen, Hash, User
+  ArrowLeft, Download, Share2, Star, Quote, Coins, Users, 
+  Tag, TrendingUp, BookOpen, Hash, User, Settings, DollarSign
 } from 'lucide-react';
 
 import CitationPaymentModal from '../components/CitationPaymentModal';
@@ -14,8 +14,8 @@ import { useContracts } from '../utils/useContracts';
 export default function PaperDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { signer } = useContext(ETHContext);
-  const { getPaperById, payCitation, getPaperCitations } = useContracts();
+  const { signer, walletAddress } = useContext(ETHContext);
+  const { getPaperById, payCitation, getPaperCitations, updateCitationFee } = useContracts();
 
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -23,8 +23,6 @@ export default function PaperDetail() {
   const [showFeeModal, setShowFeeModal] = useState(false);
   const [citations, setCitations] = useState([]);
   const [isUpdatingFee, setIsUpdatingFee] = useState(false);
-
-  const currentCitationFee = paperData?.citationFee || 0.1;
 
   // Mock paper data
   const paper = {
@@ -74,6 +72,10 @@ export default function PaperDetail() {
     navigator.clipboard.writeText(citationStyles[style]);
   };
 
+  const isAuthor = () => {
+    return walletAddress && paperData && paperData?.author.toLowerCase() === walletAddress.toLowerCase();
+  };
+
   const handleUpdateFee = async (newFee) => {
     setIsUpdatingFee(true);
     try {
@@ -95,6 +97,8 @@ export default function PaperDetail() {
     }
   };
 
+  const currentCitationFee = paperData?.citationFee || 0.1;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       {/* Background Effects */}
@@ -113,6 +117,12 @@ export default function PaperDetail() {
                 <span className="text-sm text-purple-300 font-medium">{paperData?.field}</span>
                 <span className="text-gray-400">•</span>
                 <span className="text-sm text-gray-400">{formatDate(paperData?.timestamp)}</span>
+                {isAuthor() && (
+                  <>
+                    <span className="text-gray-400">•</span>
+                    <span className="text-sm text-green-400 font-medium">Your Paper</span>
+                  </>
+                )}
               </div>
               <h1 className="text-2xl md:text-3xl font-bold leading-tight">{paperData?.title}</h1>
             </div>
@@ -124,40 +134,6 @@ export default function PaperDetail() {
             {/* Left Column - Paper Details */}
             <div className="lg:col-span-2 space-y-8">
               
-              {/* Stats Bar */}
-              {/* <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div className="text-center">
-                    <div className="flex justify-center mb-2">
-                      <Quote className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div className="text-2xl font-bold text-purple-300">{paper.citations}</div>
-                    <div className="text-sm text-gray-400">Citations</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex justify-center mb-2">
-                      <Download className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div className="text-2xl font-bold text-blue-300">{paper.downloads}</div>
-                    <div className="text-sm text-gray-400">Downloads</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex justify-center mb-2">
-                      <Eye className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div className="text-2xl font-bold text-green-300">{paper.views}</div>
-                    <div className="text-sm text-gray-400">Views</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex justify-center mb-2">
-                      <Star className="w-5 h-5 text-yellow-400" />
-                    </div>
-                    <div className="text-2xl font-bold text-yellow-300">{paper.rating}</div>
-                    <div className="text-sm text-gray-400">Rating</div>
-                  </div>
-                </div>
-              </div> */}
-
               {/* Navigation Tabs */}
               <div className="flex space-x-6 border-b border-white/10">
                 {['overview', 'citers'].map((tab) => (
@@ -193,7 +169,7 @@ export default function PaperDetail() {
                         <span>Keywords</span>
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {paperData?.keywords.map((keyword, index) => (
+                        {paperData?.keywords?.map((keyword, index) => (
                           <span
                             key={index}
                             className="px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-sm"
@@ -226,8 +202,8 @@ export default function PaperDetail() {
                             <span className="text-xs">{paper.license}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Citation Reward:</span>
-                            <span className="text-xs">₮{paper.citationReward}</span>
+                            <span className="text-gray-400">Citation Fee:</span>
+                            <span className="text-xs">{currentCitationFee} FIL</span>
                           </div>
                         </div>
                       </div>
@@ -258,40 +234,64 @@ export default function PaperDetail() {
             {/* Right Column - Actions & Author Info */}
             <div className="space-y-6">
               
-              {/* Citation Payment Card */}
-              <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-sm rounded-xl border border-purple-500/20 p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Quote className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-lg font-semibold">Cite This Paper</h3>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
-                    <div className="text-2xl font-bold text-purple-300 mb-1">0.1 FIL</div>
-                    <div className="text-sm text-gray-400">Citation Fee</div>
+              {/* Author Management Panel - Only shown to paper author */}
+              {isAuthor() && (
+                <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm rounded-xl border border-green-500/20 p-6">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Settings className="w-5 h-5 text-green-400" />
+                    <h3 className="text-lg font-semibold">Author Controls</h3>
                   </div>
                   
-                  <button
-                    onClick={() => setShowCitationModal(true)}
-                    className="w-full bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
-                  >
-                    <Coins className="w-5 h-5" />
-                    <span>Pay to Cite</span>
-                  </button>
-                  
-                  <div className="text-xs text-gray-400 text-center">
-                    Support the authors by paying for citations
-                  </div>
-
-                  <button
+                  <div className="space-y-4">
+                    <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-300">Current Citation Fee</span>
+                        <span className="text-sm font-semibold text-green-300">{currentCitationFee} FIL</span>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Total earned: {Number(paperData?.totalEarnings || 0) / 10 ** 18} FIL
+                      </div>
+                    </div>
+                    
+                    <button
                       onClick={() => setShowFeeModal(true)}
                       className="w-full bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
                     >
                       <DollarSign className="w-4 h-4" />
                       <span>Update Citation Fee</span>
                     </button>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Citation Payment Card - Only shown to non-authors */}
+              {!isAuthor() && (
+                <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-sm rounded-xl border border-purple-500/20 p-6">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Quote className="w-5 h-5 text-purple-400" />
+                    <h3 className="text-lg font-semibold">Cite This Paper</h3>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                      <div className="text-2xl font-bold text-purple-300 mb-1">{currentCitationFee} FIL</div>
+                      <div className="text-sm text-gray-400">Citation Fee</div>
+                    </div>
+                    
+                    <button
+                      onClick={() => setShowCitationModal(true)}
+                      className="w-full bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                    >
+                      <Coins className="w-5 h-5" />
+                      <span>Pay to Cite</span>
+                    </button>
+                    
+                    <div className="text-xs text-gray-400 text-center">
+                      Support the authors by paying for citations
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
@@ -327,8 +327,10 @@ export default function PaperDetail() {
                       <div>
                         <div className="flex items-center space-x-2">
                           <span className="font-medium text-sm">{formatAddress(paperData?.author)}</span>
+                          {isAuthor() && (
+                            <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full">You</span>
+                          )}
                         </div>
-                        {/* <div className="text-xs text-gray-400 font-mono">{author.wallet}</div> */}
                       </div>
                     </div>
                   </div>
@@ -348,7 +350,11 @@ export default function PaperDetail() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-400">Total Earnings:</span>
-                    <span className="text-sm font-semibold text-purple-300">{Number(paperData?.totalEarnings || 0) / 10 ** 18}</span>
+                    <span className="text-sm font-semibold text-purple-300">{Number(paperData?.totalEarnings || 0) / 10 ** 18} FIL</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Citations:</span>
+                    <span className="text-sm">{citations.length}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-400">Reviews:</span>
@@ -363,7 +369,13 @@ export default function PaperDetail() {
 
       {/* Citation Payment Modal */}
       {showCitationModal && (
-        <CitationPaymentModal id={id} signer={signer} payCitation={payCitation} setShowCitationModal={setShowCitationModal} />
+        <CitationPaymentModal 
+          id={id} 
+          signer={signer} 
+          payCitation={payCitation} 
+          setShowCitationModal={setShowCitationModal} 
+          citationFee={currentCitationFee}
+        />
       )}
 
       {/* Citation Fee Management Modal */}
