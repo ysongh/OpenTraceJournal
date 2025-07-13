@@ -24,7 +24,7 @@ export const useContracts = () => {
 
   const setCitationPrice = async (signer, id, amount) => {
     const contract = await getDecentralizedJournalContract(signer);
-    const createTX = await contract.setCitationPrice(id - 1, amount);
+    const createTX = await contract.setCitationPrice(id - 1, ethers.parseEther(amount.toString()));
     await createTX.wait();
     return createTX;
   }

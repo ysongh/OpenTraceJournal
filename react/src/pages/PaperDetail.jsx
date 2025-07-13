@@ -15,7 +15,7 @@ export default function PaperDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { signer, walletAddress } = useContext(ETHContext);
-  const { getPaperById, payCitation, getPaperCitations, updateCitationFee } = useContracts();
+  const { getPaperById, payCitation, getPaperCitations, setCitationPrice } = useContracts();
 
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -79,7 +79,8 @@ export default function PaperDetail() {
   const handleUpdateFee = async (newFee) => {
     setIsUpdatingFee(true);
     try {
-      await updateCitationFee(signer, id, newFee);
+      console.log(newFee)
+      await setCitationPrice(signer, id, newFee);
       
       // Update local paper data
       setPaperData(prev => ({
