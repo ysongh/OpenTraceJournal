@@ -327,11 +327,11 @@ export default function PapersList() {
           </div>
           
           <div className="flex items-center space-x-4 text-sm text-gray-400 mb-2">
-            <span>{paper.authors.join(', ')}</span>
+            <span>{formatAddress(paper.author || "")}</span>
             <span>•</span>
             <span>{paper.field}</span>
             <span>•</span>
-            <span>{formatDate(paper.publishedDate)}</span>
+            <span>{formatDate(paper.timestamp)}</span>
           </div>
           
           <p className="text-gray-400 text-sm mb-3 line-clamp-2">
@@ -342,15 +342,15 @@ export default function PapersList() {
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-1">
                 <TrendingUp className="w-4 h-4 text-purple-400" />
-                <span className="text-sm text-gray-300">{formatNumber(paper.citations)} citations</span>
+                <span className="text-sm text-gray-300">{formatNumber(0)} citations</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Download className="w-4 h-4 text-blue-400" />
-                <span className="text-sm text-gray-300">{formatNumber(paper.downloads)} downloads</span>
+                <span className="text-sm text-gray-300">{formatNumber(0)} downloads</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Eye className="w-4 h-4 text-green-400" />
-                <span className="text-sm text-gray-300">{formatNumber(paper.views)} views</span>
+                <span className="text-sm text-gray-300">{formatNumber(0)} views</span>
               </div>
             </div>
             <div className="flex items-center space-x-2">
