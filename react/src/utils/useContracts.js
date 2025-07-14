@@ -100,6 +100,7 @@ export const useContracts = () => {
           id: i + 1,
           title: citation[3],
           author: citation[4],
+          timestamp: citation[6],
         }
         citations.push(formatCitation);
       }

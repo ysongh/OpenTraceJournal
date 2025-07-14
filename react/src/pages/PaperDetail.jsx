@@ -222,9 +222,10 @@ export default function PaperDetail() {
                     {citations.map((citation) => (
                       <div key={citation.id} className="p-4 bg-white/5 rounded-lg border border-white/10">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-purple-300">{citation.title}</span>
+                          <span className="font-medium text-purple-300">{citation?.title}</span>
                         </div>
-                        <p className="text-sm text-gray-300 leading-relaxed">{citation.author}</p>
+                        <p className="text-sm text-gray-300 leading-relaxed">{citation?.author}</p>
+                        <p className="text-sm text-gray-300 leading-relaxed">{formatDate(citation?.timestamp)}</p>
                       </div>
                     ))}
                   </div>
