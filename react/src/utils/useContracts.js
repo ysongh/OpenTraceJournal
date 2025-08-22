@@ -1,4 +1,5 @@
-import { ethers } from 'ethers';
+import { Blocklock, encodeCiphertextToSolidity, encodeCondition } from "blocklock-js";
+import { Wallet, NonceManager, ethers, getBytes } from "ethers";
 import DecentralizedJournal from "../artifacts/contracts/DecentralizedJournal.sol/DecentralizedJournal.json";
 
 const DECENTRALIZEDJOURNAL_ADDRESS =  import.meta.env.VITE_CONTRACT_ADDRESS;
@@ -27,6 +28,25 @@ export const useContracts = () => {
     const createTX = await contract.setCitationPrice(id - 1, ethers.parseEther(amount.toString()));
     await createTX.wait();
     return createTX;
+  }
+
+  const encryptData = async (provider, signer) => {
+    try {
+      const blocklock = Blocklock.createFilecoinMainnet(signer);
+      console.log("blocklock", blocklock);
+
+      const msg = "It working"
+      const plaintext = Buffer.from(msg);
+      const currentBlock = await provider.getBlockNumber();
+      const targetBlock = BigInt(currentBlock + 5);
+
+      console.log(`Encrypting for block ${targetBlock} (current: ${currentBlock})`);
+      const ciphertext = await blocklock.encrypt(plaintext, targetBlock);
+      console.log("ciphertext", ciphertext);
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   }
 
   const getPapers = async (signer) => {
@@ -117,6 +137,7 @@ export const useContracts = () => {
     mintPaper,
     payCitation,
     setCitationPrice,
+    encryptData,
     getPapers,
     getPaperById,
     getPaperCitations

@@ -14,8 +14,8 @@ import { useContracts } from '../utils/useContracts';
 export default function PaperDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { signer, walletAddress } = useContext(ETHContext);
-  const { getPaperById, payCitation, getPaperCitations, setCitationPrice } = useContracts();
+  const { provider, signer, walletAddress } = useContext(ETHContext);
+  const { getPaperById, payCitation, getPaperCitations, setCitationPrice, encryptData } = useContracts();
 
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -310,6 +310,9 @@ export default function PaperDetail() {
                   <button className="w-full flex items-center justify-center space-x-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
                     <Star className="w-5 h-5" />
                     <span>Add to Favorites</span>
+                  </button>
+                  <button className="w-full flex items-center justify-center space-x-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors" onClick={() => encryptData(provider, signer)}>
+                    <span>Test</span>
                   </button>
                 </div>
               </div>
