@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {TypesLib} from "blocklock-solidity/src/libraries/TypesLib.sol";
+import {AbstractBlocklockReceiver} from "blocklock-solidity/src/AbstractBlocklockReceiver.sol";
 
 /**
  * @title DecentralizedJournal
@@ -12,8 +14,12 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * Authors can mint papers and earn from citations
  * Users pay authors to cite their papers with on-chain proof
  */
-contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {    
-    address public immutable owner;
+contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard, AbstractBlocklockReceiver {    
+    address public immutable owner1;
+
+    uint256 public requestId;
+    TypesLib.Ciphertext public encryptedValue;
+    uint256 public plainTextValue;
 
     // Token counter for unique paper IDs
     uint256 private _tokenIdCounter;
@@ -103,8 +109,8 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         _;
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Not the Owner");
+    modifier onlyOwner1() {
+        require(msg.sender == owner1, "Not the Owner");
         _;
     }
     
@@ -119,9 +125,13 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
     }
     
     constructor(
-        address _owner
-    ) ERC721("DecentralizedJournal", "DJNL") {
-        owner = _owner;
+        address _owner,
+        address blocklockContract
+    )
+        ERC721("DecentralizedJournal", "DJNL")
+        AbstractBlocklockReceiver(blocklockContract)
+    {
+        owner1 = _owner;
     }
     
     /**
@@ -255,6 +265,21 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         citationPrices[paperId] = price;
         emit CitationPriceSet(paperId, price);
     }
+
+    function createTimelockRequestWithDirectFunding(
+        uint32 callbackGasLimit,
+        bytes calldata condition,
+        TypesLib.Ciphertext calldata encryptedData
+    ) external payable returns (uint256, uint256) {
+        // create timelock request
+        (uint256 _requestId, uint256 requestPrice) =
+            _requestBlocklockPayInNative(callbackGasLimit, condition, encryptedData);
+        // store request id
+        requestId = _requestId;
+        // store Ciphertext
+        encryptedValue = encryptedData;
+        return (requestId, requestPrice);
+    }
     
     /**
      * @dev Get citation price for a paper
@@ -355,7 +380,7 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
         
-        (bool success, ) = payable(owner).call{value: balance}("");
+        (bool success, ) = payable(owner1).call{value: balance}("");
         require(success, "Withdrawal failed");
     }
     
@@ -385,5 +410,11 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    function _onBlocklockReceived(uint256 _requestId, bytes calldata decryptionKey) internal override {
+        require(requestId == _requestId, "Invalid request id.");
+        // decrypt stored Ciphertext with decryption key
+        plainTextValue = abi.decode(_decrypt(encryptedValue, decryptionKey), (uint256));
     }
 }
