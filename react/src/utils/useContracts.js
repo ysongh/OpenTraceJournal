@@ -1,12 +1,18 @@
-import { Blocklock, encodeCiphertextToSolidity, encodeCondition } from "blocklock-js";
+import { Blocklock, encodeCiphertextToSolidity, encodeCondition, encodeParams } from "blocklock-js";
 import { Wallet, NonceManager, ethers, getBytes } from "ethers";
 import DecentralizedJournal from "../artifacts/contracts/DecentralizedJournal.sol/DecentralizedJournal.json";
+import MockBlocklockReceiver from "../artifacts/contracts/MockBlocklockReceiver.sol/MockBlocklockReceiver.json";
 
 const DECENTRALIZEDJOURNAL_ADDRESS =  import.meta.env.VITE_CONTRACT_ADDRESS;
+const MOCKBLOCKLOCKRECEIVER_ADDRESS =  import.meta.env.VITE_CONTRACT_ADDRESS1;
 
 export const useContracts = () => {
   const getDecentralizedJournalContract = async (signer) => {
     return new ethers.Contract(DECENTRALIZEDJOURNAL_ADDRESS, DecentralizedJournal.abi, signer);
+  };
+
+  const getMockBlocklockReceiverContract = async (signer) => {
+    return new ethers.Contract(MOCKBLOCKLOCKRECEIVER_ADDRESS, MockBlocklockReceiver.abi, signer);
   };
 
   const mintPaper = async (signer, title, abstractText, ipfsHash, keywords, field, tokenURI) => {
@@ -32,17 +38,53 @@ export const useContracts = () => {
 
   const encryptData = async (provider, signer) => {
     try {
-      const blocklock = Blocklock.createFilecoinMainnet(signer);
-      console.log("blocklock", blocklock);
+      const contract = await getMockBlocklockReceiverContract(signer);
 
-      const msg = "It working"
-      const plaintext = Buffer.from(msg);
-      const currentBlock = await provider.getBlockNumber();
-      const targetBlock = BigInt(currentBlock + 5);
+      const blockHeight = BigInt(await provider.getBlockNumber() + 10);
+      const conditionBytes = encodeCondition(blockHeight);
 
-      console.log(`Encrypting for block ${targetBlock} (current: ${currentBlock})`);
-      const ciphertext = await blocklock.encrypt(plaintext, targetBlock);
-      console.log("ciphertext", ciphertext);
+      // Set the message to encrypt
+      const msg = ethers.parseEther("8"); // Example: BigInt for blocklock ETH transfer
+      const msgBytes = encodeParams(["uint256"], [msg]);
+      const encodedMessage = getBytes(msgBytes);
+
+      // Encrypt the encoded message usng Blocklock.js library
+      const blocklockjs = Blocklock.createFilecoinCalibnet(signer);
+      const cipherMessage = blocklockjs.encrypt(encodedMessage, blockHeight);
+
+      // Set the callback gas limit and price
+      // Best practice is to estimate the callback gas limit e.g., by extracting gas reports from Solidity tests
+      const callbackGasLimit = 700_000n;
+      // Based on the callbackGasLimit, we can estimate the request price by calling BlocklockSender
+      // Note: Add a buffer to the estimated request price to cover for fluctuating gas prices between blocks
+      const [requestCallBackPrice] = await blocklockjs.calculateRequestPriceNative(callbackGasLimit)
+
+      console.log("Target block for unlock:", blockHeight);
+      console.log("Callback gas limit:", callbackGasLimit);
+      console.log("Request CallBack price:", ethers.formatEther(requestCallBackPrice), "ETH");
+      
+      //Ensure wallet has enought token to cover the callback fee
+      const balance = await provider.getBalance(signer.address);
+      console.log("Wallet balance:", ethers.formatEther(balance), "ETH");
+      if (balance < requestCallBackPrice) {
+          throw new Error(`Insufficient balance. Need ${ethers.formatEther(requestCallBackPrice)} ETH but have ${ethers.formatEther(balance)} ETH`);
+      }
+
+      // 3. Invoke myBlocklockReceiver contract to request blocklock encryption with direct funding.
+      console.log("Sending transaction...");
+      const tx = await contract.createTimelockRequestWithDirectFunding(
+          callbackGasLimit,
+          conditionBytes,
+          encodeCiphertextToSolidity(cipherMessage),
+          { value: requestCallBackPrice }
+      );
+      
+      console.log("Transaction sent, waiting for confirmation...");
+      const receipt = await tx.wait(1);
+      if (!receipt) {
+          throw new Error("Transaction failed");
+      }
+      console.log("BlockLock requested in tx:", receipt.hash);
     } catch (err) {
       console.error(err);
       return null;
