@@ -7,6 +7,7 @@ import MintPaperNFTForm from './pages/MintPaperNFTForm';
 import PapersList from './pages/PapersList';
 import PaperDetail from './pages/PaperDetail';
 import CreateKey from './pages/CreateKey';
+import PaperSubmissionForm from './pages/PaperSubmissionForm';
 
 function App() {
 
@@ -21,6 +22,9 @@ function App() {
           <Route
             path="/mintpapernft"
             element={<MintPaperNFTForm />} />
+          <Route
+            path="/papersubmission"
+            element={<PaperSubmissionForm />} />
           <Route
             path="/paperslist"
             element={<PapersList />} />
