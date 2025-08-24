@@ -15,7 +15,7 @@ export default function PaperDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { provider, signer, walletAddress } = useContext(ETHContext);
-  const { getPaperById, payCitation, getPaperCitations, setCitationPrice, encryptData } = useContracts();
+  const { getPaperById, payCitation, getPaperCitations, setCitationPrice, encryptData, getDecryptedValue } = useContracts();
 
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -313,6 +313,9 @@ export default function PaperDetail() {
                   </button>
                   <button className="w-full flex items-center justify-center space-x-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors" onClick={() => encryptData(provider, signer)}>
                     <span>Test</span>
+                  </button>
+                  <button className="w-full flex items-center justify-center space-x-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors" onClick={() => getDecryptedValue(signer)}>
+                    <span>Get Value</span>
                   </button>
                 </div>
               </div>

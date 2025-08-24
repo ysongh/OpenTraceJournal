@@ -175,6 +175,18 @@ export const useContracts = () => {
     }
   }
 
+  const getDecryptedValue = async (signer) => {
+    try {
+      const contract = await getMockBlocklockReceiverContract(signer);
+      const plainTextValue = await contract.plainTextValue();
+      console.log(plainTextValue);
+      return plainTextValue;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
   return {
     mintPaper,
     payCitation,
@@ -182,6 +194,7 @@ export const useContracts = () => {
     encryptData,
     getPapers,
     getPaperById,
-    getPaperCitations
+    getPaperCitations,
+    getDecryptedValue
   };
 }
