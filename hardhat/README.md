@@ -12,3 +12,4 @@ npx hardhat ignition deploy ./ignition/modules/DecentralizedJournal.js --network
 
 ## Deploy to calibration
 npx hardhat ignition deploy ./ignition/modules/DecentralizedJournal.js --network calibration
+npx hardhat ignition deploy ./ignition/modules/MockBlocklockReceiver.js --network baseSepolia

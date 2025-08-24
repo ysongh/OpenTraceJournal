@@ -8,7 +8,7 @@ import {AbstractBlocklockReceiver} from "blocklock-solidity/src/AbstractBlockloc
 contract MockBlocklockReceiver is AbstractBlocklockReceiver {
     uint256 public requestId;
     TypesLib.Ciphertext public encryptedValue;
-    uint256 public plainTextValue;
+    string public plainTextValue;
 
     constructor(address blocklockContract) AbstractBlocklockReceiver(blocklockContract) {}
 
@@ -41,13 +41,8 @@ contract MockBlocklockReceiver is AbstractBlocklockReceiver {
         return requestId;
     }
 
-    function cancelSubscription(address to) external onlyOwner {
-        _cancelSubscription(to);
-    }
-
     function _onBlocklockReceived(uint256 _requestId, bytes calldata decryptionKey) internal override {
-        require(requestId == _requestId, "Invalid request id.");
-        // decrypt stored Ciphertext with decryption key
-        plainTextValue = abi.decode(_decrypt(encryptedValue, decryptionKey), (uint256));
+        require(requestId == _requestId, "Invalid request id");
+        plainTextValue = abi.decode(_decrypt(encryptedValue, decryptionKey), (string));
     }
 }
