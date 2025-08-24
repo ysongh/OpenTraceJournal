@@ -10,6 +10,12 @@ module.exports = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    baseSepolia: {
+      url: `https://base-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_APIKEY}`,
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      chainId: 84532
+    },
   },
   paths: {
     artifacts: '../react/src/artifacts',
