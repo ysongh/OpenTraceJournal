@@ -9,6 +9,7 @@ export default function PaperSubmissionForm() {
   const { encryptData } = useContracts();
 
   const [paperDetail, setPaperDetail] = useState('');
+  const [timeamount, setTimeamount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +32,7 @@ export default function PaperSubmissionForm() {
     setIsSubmitting(true);
 
     try {
-      await encryptData(provider, signer, paperDetail);
+      await encryptData(provider, signer, paperDetail, timeamount);
 
       setIsSuccess(true);
       
@@ -161,6 +162,18 @@ export default function PaperSubmissionForm() {
                     <span className="text-sm">{error}</span>
                   </div>
                 )}
+
+                <label className="block text-sm font-medium mb-3">
+                  Time to unlock <span className="text-red-400">*</span>
+                </label>
+                <input
+                  value={timeamount}
+                  onChange={(e) => setTimeamount(e.target.value)}
+                  placeholder="Blocks Ahead"
+                  className={`w-full p-4 rounded-lg bg-white/10 border ${
+                    error ? 'border-red-400' : 'border-white/20'
+                  } focus:border-purple-400 focus:outline-none transition-colors text-white placeholder-gray-400 resize-none`}
+                />
 
                 {/* Submit Button */}
                 <div className="pt-6">

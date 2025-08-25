@@ -36,11 +36,11 @@ export const useContracts = () => {
     return createTX;
   }
 
-  const encryptData = async (provider, signer, paperDetail) => {
+  const encryptData = async (provider, signer, paperDetail, timeamount) => {
     try {
-      const contract = await getMockBlocklockReceiverContract(signer);
+      const contract = await getDecentralizedJournalContract(signer);
 
-      const blockHeight = BigInt(await provider.getBlockNumber() + 10);
+      const blockHeight = BigInt(await provider.getBlockNumber() + timeamount);
       const conditionBytes = encodeCondition(blockHeight);
 
       // Set the message to encrypt
