@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {TypesLib} from "blocklock-solidity/src/libraries/TypesLib.sol";
 import {AbstractBlocklockReceiver} from "blocklock-solidity/src/AbstractBlocklockReceiver.sol";
@@ -13,7 +11,7 @@ import {AbstractBlocklockReceiver} from "blocklock-solidity/src/AbstractBlockloc
  * Authors can mint papers and earn from citations
  * Users pay authors to cite their papers with on-chain proof
  */
-contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard, AbstractBlocklockReceiver {    
+contract DecentralizedJournal is ReentrancyGuard, AbstractBlocklockReceiver {    
     address public immutable owner1;
 
     uint256 public requestId;
@@ -106,11 +104,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard, Abst
         _;
     }
     
-    modifier onlyPaperOwner(uint256 paperId) {
-        require(ownerOf(paperId) == msg.sender, "Not the paper owner");
-        _;
-    }
-    
     modifier paperExists(uint256 paperId) {
         require(paperId < _tokenIdCounter, "Paper does not exist");
         _;
@@ -120,7 +113,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard, Abst
         address _owner,
         address blocklockContract
     )
-        ERC721("DecentralizedJournal", "DJNL")
         AbstractBlocklockReceiver(blocklockContract)
     {
         owner1 = _owner;
@@ -133,27 +125,17 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard, Abst
      * @param ipfsHash IPFS hash containing the full paper content
      * @param keywords Array of keywords for the paper
      * @param field The academic field (e.g., "synthetic biology")
-     * @param tokenURI URI for the NFT metadata (optional, can be empty)
      */
     function mintPaper(
         string memory title,
         string memory abstractText,
         string memory ipfsHash,
         string[] memory keywords,
-        string memory field,
-        string memory tokenURI
+        string memory field
     ) external nonReentrant validMetadata(title, abstractText, ipfsHash) {
         // Get next token ID
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter += 1;
-        
-        // Mint the NFT
-        _safeMint(msg.sender, tokenId);
-        
-        // Set token URI if provided
-        if (bytes(tokenURI).length > 0) {
-            _setTokenURI(tokenId, tokenURI);
-        }
         
         // Store paper metadata
         papers[tokenId] = PaperMetadata({
@@ -248,8 +230,7 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard, Abst
      */
     function setCitationPrice(uint256 paperId, uint256 price) 
         external 
-        paperExists(paperId) 
-        onlyPaperOwner(paperId) 
+        paperExists(paperId)
     {
         citationPrices[paperId] = price;
         emit CitationPriceSet(paperId, price);
@@ -342,25 +323,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard, Abst
         
         (bool success, ) = payable(owner1).call{value: balance}("");
         require(success, "Withdrawal failed");
-    }
-    
-    // Override functions
-    function tokenURI(uint256 tokenId) 
-        public 
-        view 
-        override(ERC721, ERC721URIStorage) 
-        returns (string memory) 
-    {
-        return super.tokenURI(tokenId);
-    }
-    
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
     }
 
     function _onBlocklockReceived(uint256 _requestId, bytes calldata decryptionKey) internal override {
