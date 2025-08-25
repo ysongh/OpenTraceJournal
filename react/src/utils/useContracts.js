@@ -1,5 +1,5 @@
 import { Blocklock, encodeCiphertextToSolidity, encodeCondition, encodeParams } from "blocklock-js";
-import { Wallet, NonceManager, ethers, getBytes } from "ethers";
+import { Wallet, NonceManager, ethers, getBytes, AbiCoder } from "ethers";
 import DecentralizedJournal from "../artifacts/contracts/DecentralizedJournal.sol/DecentralizedJournal.json";
 import MockBlocklockReceiver from "../artifacts/contracts/MockBlocklockReceiver.sol/MockBlocklockReceiver.json";
 
@@ -36,7 +36,7 @@ export const useContracts = () => {
     return createTX;
   }
 
-  const encryptData = async (provider, signer) => {
+  const encryptData = async (provider, signer, paperDetail) => {
     try {
       const contract = await getMockBlocklockReceiverContract(signer);
 
@@ -44,8 +44,7 @@ export const useContracts = () => {
       const conditionBytes = encodeCondition(blockHeight);
 
       // Set the message to encrypt
-      const msg = ethers.parseEther("8"); // Example: BigInt for blocklock ETH transfer
-      const msgBytes = encodeParams(["uint256"], [msg]);
+      const msgBytes = AbiCoder.defaultAbiCoder().encode(["string"], [paperDetail]);
       const encodedMessage = getBytes(msgBytes);
 
       // Encrypt the encoded message usng Blocklock.js library

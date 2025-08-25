@@ -31,7 +31,7 @@ export default function PaperSubmissionForm() {
     setIsSubmitting(true);
 
     try {
-      await encryptData(provider, signer);
+      await encryptData(provider, signer, paperDetail);
 
       setIsSuccess(true);
       
