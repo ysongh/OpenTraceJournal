@@ -23,7 +23,7 @@ function App() {
             path="/mintpapernft"
             element={<MintPaperNFTForm />} />
           <Route
-            path="/papersubmission"
+            path="/papersubmission/:id"
             element={<PaperSubmissionForm />} />
           <Route
             path="/paperslist"

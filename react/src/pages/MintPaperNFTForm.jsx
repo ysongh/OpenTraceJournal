@@ -167,8 +167,7 @@ export default function MintPaperNFTForm() {
         formData.abstractText,
         formData.ipfsHash,
         formData.keywords,
-        formData.field,
-        formData.ipfsHash
+        formData.field
       );
       await new Promise(resolve => setTimeout(resolve, 2000));
       setIsSuccess(true);

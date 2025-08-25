@@ -14,8 +14,8 @@ import { useContracts } from '../utils/useContracts';
 export default function PaperDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { provider, signer, walletAddress } = useContext(ETHContext);
-  const { getPaperById, payCitation, getPaperCitations, setCitationPrice, encryptData, getDecryptedValue } = useContracts();
+  const { signer, walletAddress } = useContext(ETHContext);
+  const { getPaperById, payCitation, getPaperCitations, setCitationPrice } = useContracts();
 
   const [paperData, setPaperData] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -262,6 +262,12 @@ export default function PaperDetail() {
                       <DollarSign className="w-4 h-4" />
                       <span>Update Citation Fee</span>
                     </button>
+                     <button
+                      onClick={() => navigate("/papersubmission/" + id)}
+                      className="w-full bg-gradient-to-r from-blue-500 to-sky-500 px-4 py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                    >
+                      <span>Upload Paper</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -310,12 +316,6 @@ export default function PaperDetail() {
                   <button className="w-full flex items-center justify-center space-x-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
                     <Star className="w-5 h-5" />
                     <span>Add to Favorites</span>
-                  </button>
-                  <button className="w-full flex items-center justify-center space-x-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors" onClick={() => encryptData(provider, signer)}>
-                    <span>Test</span>
-                  </button>
-                  <button className="w-full flex items-center justify-center space-x-2 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors" onClick={() => getDecryptedValue(signer)}>
-                    <span>Get Value</span>
                   </button>
                 </div>
               </div>

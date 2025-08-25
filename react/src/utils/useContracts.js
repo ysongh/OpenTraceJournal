@@ -15,9 +15,9 @@ export const useContracts = () => {
     return new ethers.Contract(MOCKBLOCKLOCKRECEIVER_ADDRESS, MockBlocklockReceiver.abi, signer);
   };
 
-  const mintPaper = async (signer, title, abstractText, ipfsHash, keywords, field, tokenURI) => {
+  const mintPaper = async (signer, title, abstractText, ipfsHash, keywords, field) => {
     const contract = await getDecentralizedJournalContract(signer);
-    const createTX = await contract.mintPaper(title, abstractText, ipfsHash, keywords, field, tokenURI);
+    const createTX = await contract.mintPaper(title, abstractText, ipfsHash, keywords, field);
     await createTX.wait();
     return createTX;
   }
