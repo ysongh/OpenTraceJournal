@@ -4,7 +4,7 @@ import DecentralizedJournal from "../artifacts/contracts/DecentralizedJournal.so
 import MockBlocklockReceiver from "../artifacts/contracts/MockBlocklockReceiver.sol/MockBlocklockReceiver.json";
 
 const DECENTRALIZEDJOURNAL_ADDRESS =  import.meta.env.VITE_CONTRACT_ADDRESS;
-const MOCKBLOCKLOCKRECEIVER_ADDRESS =  import.meta.env.VITE_CONTRACT_ADDRESS1;
+const MOCKBLOCKLOCKRECEIVER_ADDRESS =  import.meta.env.VITE_CONTRACT_ADDRESS2;
 
 export const useContracts = () => {
   const getDecentralizedJournalContract = async (signer) => {
@@ -49,7 +49,7 @@ export const useContracts = () => {
       const encodedMessage = getBytes(msgBytes);
 
       // Encrypt the encoded message usng Blocklock.js library
-      const blocklockjs = Blocklock.createFilecoinCalibnet(signer);
+      const blocklockjs = Blocklock.createBaseSepolia(signer);
       const cipherMessage = blocklockjs.encrypt(encodedMessage, blockHeight);
 
       // Set the callback gas limit and price

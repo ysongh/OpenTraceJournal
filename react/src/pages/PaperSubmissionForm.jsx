@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { FileText, Send, CheckCircle, AlertCircle, Loader2, ArrowRight, Zap, TimerIcon } from 'lucide-react';
 
+import { ETHContext } from '../ETHContext';
+import { useContracts } from '../utils/useContracts';
+
 export default function PaperSubmissionForm() {
+  const { provider, signer } = useContext(ETHContext);
+  const { encryptData } = useContracts();
+
   const [paperDetail, setPaperDetail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -25,18 +31,8 @@ export default function PaperSubmissionForm() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock submission data
-      const submissionData = {
-        paperDetail: paperDetail.trim(),
-        timestamp: new Date().toISOString(),
-        wordCount: paperDetail.trim().split(' ').length,
-        characterCount: paperDetail.trim().length
-      };
+      await encryptData(provider, signer);
 
-      console.log('Paper submission:', submissionData);
       setIsSuccess(true);
       
     } catch (error) {
