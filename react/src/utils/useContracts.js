@@ -36,7 +36,7 @@ export const useContracts = () => {
     return createTX;
   }
 
-  const encryptData = async (provider, signer, paperDetail, timeamount) => {
+  const encryptData = async (provider, id, signer, paperDetail, timeamount) => {
     try {
       const contract = await getDecentralizedJournalContract(signer);
 
@@ -72,6 +72,7 @@ export const useContracts = () => {
       // 3. Invoke myBlocklockReceiver contract to request blocklock encryption with direct funding.
       console.log("Sending transaction...");
       const tx = await contract.createTimelockRequestWithDirectFunding(
+          id,
           callbackGasLimit,
           conditionBytes,
           encodeCiphertextToSolidity(cipherMessage),

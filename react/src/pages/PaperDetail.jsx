@@ -169,7 +169,7 @@ export default function PaperDetail() {
                         <Tag className="w-5 h-5 text-blue-400" />
                         <span>Keywords</span>
                       </h3>
-                      <div className="flex flex-wrap gap-2">
+                      {/* <div className="flex flex-wrap gap-2">
                         {paperData?.keywords?.map((keyword, index) => (
                           <span
                             key={index}
@@ -178,7 +178,7 @@ export default function PaperDetail() {
                             {keyword}
                           </span>
                         ))}
-                      </div>
+                      </div> */}
                     </div>
 
                     <div>

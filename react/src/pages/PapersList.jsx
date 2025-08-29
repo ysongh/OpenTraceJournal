@@ -249,7 +249,7 @@ export default function PapersList() {
       </p>
 
       {/* Keywords */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      {/* <div className="flex flex-wrap gap-2 mb-4">
         {paper.keywords.slice(0, 3).map((keyword, index) => (
           <span
             key={index}
@@ -263,7 +263,7 @@ export default function PapersList() {
             +{paper.keywords.length - 3} more
           </span>
         )}
-      </div>
+      </div> */}
 
       {/* NFT Info */}
       <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg p-3 mb-4 border border-purple-500/20">

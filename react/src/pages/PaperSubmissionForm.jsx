@@ -1,10 +1,12 @@
 import { useContext, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { FileText, Send, CheckCircle, AlertCircle, Loader2, ArrowRight, Zap, TimerIcon } from 'lucide-react';
 
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
 
 export default function PaperSubmissionForm() {
+  const { id } = useParams();
   const { provider, signer } = useContext(ETHContext);
   const { encryptData } = useContracts();
 
@@ -24,15 +26,10 @@ export default function PaperSubmissionForm() {
       return;
     }
 
-    if (paperDetail.trim().length < 50) {
-      setError('Paper detail must be at least 50 characters');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      await encryptData(provider, signer, paperDetail, timeamount);
+      await encryptData(provider, id, signer, paperDetail, timeamount);
 
       setIsSuccess(true);
       
