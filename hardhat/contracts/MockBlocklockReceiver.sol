@@ -10,6 +10,9 @@ contract MockBlocklockReceiver is AbstractBlocklockReceiver {
     TypesLib.Ciphertext public encryptedValue;
     string public plainTextValue;
 
+    mapping(uint256 => string) public requestIdToplainTextValue;
+    mapping(uint256 => TypesLib.Ciphertext) public requestIdToEncryptedValue;
+
     constructor(address blocklockContract) AbstractBlocklockReceiver(blocklockContract) {}
 
     function createTimelockRequestWithDirectFunding(
@@ -20,10 +23,8 @@ contract MockBlocklockReceiver is AbstractBlocklockReceiver {
         // create timelock request
         (uint256 _requestId, uint256 requestPrice) =
             _requestBlocklockPayInNative(callbackGasLimit, condition, encryptedData);
-        // store request id
-        requestId = _requestId;
         // store Ciphertext
-        encryptedValue = encryptedData;
+        requestIdToEncryptedValue[_requestId] = encryptedData;
         return (requestId, requestPrice);
     }
 

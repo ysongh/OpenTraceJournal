@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {TypesLib} from "blocklock-solidity/src/libraries/TypesLib.sol";
-import {AbstractBlocklockReceiver} from "blocklock-solidity/src/AbstractBlocklockReceiver.sol";
+import "./MockBlocklockReceiver.sol";
 
 /**
  * @title DecentralizedJournal
@@ -11,12 +11,9 @@ import {AbstractBlocklockReceiver} from "blocklock-solidity/src/AbstractBlockloc
  * Authors can mint papers and earn from citations
  * Users pay authors to cite their papers with on-chain proof
  */
-contract DecentralizedJournal is ReentrancyGuard, AbstractBlocklockReceiver {    
+contract DecentralizedJournal is ReentrancyGuard {
+    MockBlocklockReceiver public immutable mockBlocklockReceiver;
     address public immutable owner1;
-
-    uint256 public requestId;
-    TypesLib.Ciphertext public encryptedValue;
-    string public plainTextValue;
 
     // Token counter for unique paper IDs
     uint256 private _tokenIdCounter;
@@ -32,6 +29,7 @@ contract DecentralizedJournal is ReentrancyGuard, AbstractBlocklockReceiver {
         address author;
         uint256 timestamp;
         string[] keywords;
+        uint256[] requestId;
         string field; // e.g., "synthetic biology", "computer science"
         uint256 citationCount;
         uint256 totalEarnings; // Total earnings from citations
@@ -111,11 +109,10 @@ contract DecentralizedJournal is ReentrancyGuard, AbstractBlocklockReceiver {
     
     constructor(
         address _owner,
-        address blocklockContract
-    )
-        AbstractBlocklockReceiver(blocklockContract)
-    {
+        address payable _mockBlocklockReceiver
+    ){
         owner1 = _owner;
+        mockBlocklockReceiver = MockBlocklockReceiver(_mockBlocklockReceiver);
     }
     
     /**
@@ -145,6 +142,7 @@ contract DecentralizedJournal is ReentrancyGuard, AbstractBlocklockReceiver {
             author: msg.sender,
             timestamp: block.timestamp,
             keywords: keywords,
+            requestId: new uint256[](0),
             field: field,
             citationCount: 0,
             totalEarnings: 0
@@ -237,18 +235,15 @@ contract DecentralizedJournal is ReentrancyGuard, AbstractBlocklockReceiver {
     }
 
     function createTimelockRequestWithDirectFunding(
+        uint256 paperId,
         uint32 callbackGasLimit,
         bytes calldata condition,
         TypesLib.Ciphertext calldata encryptedData
     ) external payable returns (uint256, uint256) {
-        // create timelock request
-        (uint256 _requestId, uint256 requestPrice) =
-            _requestBlocklockPayInNative(callbackGasLimit, condition, encryptedData);
+        (uint256 _requestId, uint256 requestPrice) = mockBlocklockReceiver.createTimelockRequestWithDirectFunding{value: msg.value}(callbackGasLimit, condition, encryptedData);
         // store request id
-        requestId = _requestId;
-        // store Ciphertext
-        encryptedValue = encryptedData;
-        return (requestId, requestPrice);
+        papers[paperId].requestId.push(_requestId);
+        return (_requestId, requestPrice);
     }
     
     /**
@@ -317,16 +312,11 @@ contract DecentralizedJournal is ReentrancyGuard, AbstractBlocklockReceiver {
     /**
      * @dev Withdraw platform fees (only owner)
      */
-    function withdrawPlatformFees() external onlyOwner {
+    function withdrawPlatformFees() external onlyOwner1 {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
         
         (bool success, ) = payable(owner1).call{value: balance}("");
         require(success, "Withdrawal failed");
-    }
-
-    function _onBlocklockReceived(uint256 _requestId, bytes calldata decryptionKey) internal override {
-        require(requestId == _requestId, "Invalid request id");
-        plainTextValue = abi.decode(_decrypt(encryptedValue, decryptionKey), (string));
     }
 }
