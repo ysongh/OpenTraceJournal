@@ -1,12 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { FileText, Upload, Plus, X, CheckCircle, AlertCircle, Hash, Tag, BookOpen, Globe, Zap, ArrowRight } from 'lucide-react';
 import lighthouse from "@lighthouse-web3/sdk";
+import { Synapse } from "@filoz/synapse-sdk";
 
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
 
 export default function MintPaperNFTForm() {
-  const { signer } = useContext(ETHContext);
+  const { provider, signer } = useContext(ETHContext);
   const { mintPaper } = useContracts();
 
   const [formData, setFormData] = useState({
@@ -179,6 +180,14 @@ export default function MintPaperNFTForm() {
     }
   };
 
+  const storeString = async () => {
+    const synapse = await Synapse.create({ provider });
+    const storage = await synapse.createStorage();
+    const data = new TextEncoder().encode(formData.abstractText);
+    const result = await storage.upload(data);
+    console.log(`Stored with CommP: ${result.commp}`)
+  }
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -300,6 +309,26 @@ export default function MintPaperNFTForm() {
                   )}
                 </div>
               </div>
+
+              <button
+                  onClick={storeString}
+                  className={`w-full py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 ${
+                    isSubmitting
+                      ? 'bg-gray-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:shadow-2xl hover:shadow-purple-500/25'
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Minting NFT...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Store onchain</span>
+                    </>
+                  )}
+                </button>
 
               {/* IPFS Hash */}
               <div>
