@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { FileText, Upload, Plus, X, CheckCircle, AlertCircle, Hash, Tag, BookOpen, Globe, Zap, ArrowRight } from 'lucide-react';
 import lighthouse from "@lighthouse-web3/sdk";
-import { Synapse } from "@filoz/synapse-sdk";
+import { Synapse, TOKENS, CONTRACT_ADDRESSES } from "@filoz/synapse-sdk";
+import { ethers } from 'ethers';
 
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
@@ -182,6 +183,19 @@ export default function MintPaperNFTForm() {
 
   const storeString = async () => {
     const synapse = await Synapse.create({ provider });
+
+    // Deposit USDFC tokens (one-time setup)
+    const amount = ethers.parseUnits('10', 18);  // 10 USDFC
+    await synapse.payments.deposit(amount, TOKENS.USDFC);
+
+    // Approve the Pandora service for automated payments
+    const pandoraAddress = CONTRACT_ADDRESSES.PANDORA_SERVICE[synapse.getNetwork()]
+    await synapse.payments.approveService(
+      pandoraAddress,
+      ethers.parseUnits('10', 18),   // Rate allowance: 10 USDFC per epoch
+      ethers.parseUnits('1000', 18)  // Lockup allowance: 1000 USDFC total
+    );
+
     const storage = await synapse.createStorage();
     const data = new TextEncoder().encode(formData.abstractText);
     const result = await storage.upload(data);
