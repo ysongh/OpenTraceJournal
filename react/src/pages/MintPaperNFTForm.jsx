@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FileText, Upload, Plus, X, CheckCircle, AlertCircle, Hash, Tag, BookOpen, Globe, Zap, ArrowRight } from 'lucide-react';
 import lighthouse from "@lighthouse-web3/sdk";
 import { Synapse, TOKENS, CONTRACT_ADDRESSES } from "@filoz/synapse-sdk";
@@ -39,6 +39,17 @@ export default function MintPaperNFTForm() {
     'Bioinformatics',
     'Other'
   ];
+  
+  useEffect(() => {
+    if(provider) getUSDFCAllowance();
+  }, [provider])
+
+  const getUSDFCAllowance = async () => {
+    const synapse = await Synapse.create({ provider });
+    const paymentsContract = CONTRACT_ADDRESSES.PAYMENTS[synapse.getNetwork()]
+    const currentAllowance = await synapse.payments.allowance(TOKENS.USDFC, paymentsContract)
+    console.log(`USDFC Allowance: ${ethers.formatUnits(currentAllowance, 18)}`);
+  };
 
   const validateForm = () => {
     const newErrors = {};
