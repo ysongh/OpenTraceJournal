@@ -11,6 +11,8 @@ export default function MintPaperNFTForm() {
   const { provider, signer } = useContext(ETHContext);
   const { mintPaper } = useContracts();
 
+  const [usdfc, setusdfc] = useState(0);
+  const [payments, setpayments] = useState(0);
   const [formData, setFormData] = useState({
     title: '',
     abstractText: '',
@@ -42,6 +44,7 @@ export default function MintPaperNFTForm() {
   
   useEffect(() => {
     if(provider) getUSDFCAllowance();
+    if(provider) getBalance();
   }, [provider])
 
   const getUSDFCAllowance = async () => {
@@ -49,6 +52,18 @@ export default function MintPaperNFTForm() {
     const paymentsContract = CONTRACT_ADDRESSES.PAYMENTS[synapse.getNetwork()]
     const currentAllowance = await synapse.payments.allowance(TOKENS.USDFC, paymentsContract)
     console.log(`USDFC Allowance: ${ethers.formatUnits(currentAllowance, 18)}`);
+  };
+
+  const getBalance = async () => {
+    const synapse = await Synapse.create({ provider });
+    const [filRaw, usdfcRaw, paymentsRaw] = await Promise.all([
+      synapse.payments.walletBalance(),
+      synapse.payments.walletBalance(TOKENS.USDFC),
+      synapse.payments.balance(TOKENS.USDFC),
+    ]);
+    console.log(filRaw, usdfcRaw, paymentsRaw);
+    setusdfc(usdfcRaw);
+    setpayments(paymentsRaw);
   };
 
   const validateForm = () => {
@@ -278,6 +293,9 @@ export default function MintPaperNFTForm() {
               Transform your academic paper into an NFT and start earning from citations and downloads
             </p>
           </div>
+
+          <p>{usdfc} USDFC</p>
+          <p>{payments} USDFC</p>
 
           {/* Form */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-8">
