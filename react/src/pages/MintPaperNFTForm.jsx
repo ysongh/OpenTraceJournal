@@ -6,6 +6,7 @@ import { ethers } from 'ethers';
 
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
+import { formatBalance } from '../utils/format';
 
 export default function MintPaperNFTForm() {
   const { provider, signer } = useContext(ETHContext);
@@ -61,9 +62,11 @@ export default function MintPaperNFTForm() {
       synapse.payments.walletBalance(TOKENS.USDFC),
       synapse.payments.balance(TOKENS.USDFC),
     ]);
+
+    const usdfcDecimals = synapse.payments.decimals(TOKENS.USDFC);
     console.log(filRaw, usdfcRaw, paymentsRaw);
-    setusdfc(usdfcRaw);
-    setpayments(paymentsRaw);
+    setusdfc(formatBalance(usdfcRaw, usdfcDecimals));
+    setpayments(formatBalance(paymentsRaw, usdfcDecimals));
   };
 
   const validateForm = () => {
