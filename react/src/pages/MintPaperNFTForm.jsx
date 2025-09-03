@@ -28,6 +28,8 @@ export default function MintPaperNFTForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState("");
 
   const academicFields = [
     'Synthetic Biology',
@@ -225,7 +227,38 @@ export default function MintPaperNFTForm() {
       ethers.parseUnits('1000', 18)  // Lockup allowance: 1000 USDFC total
     );
 
-    const storage = await synapse.createStorage();
+    const storage = await synapse.createStorage({
+        callbacks: {
+          onDataSetResolved: (info) => {
+            console.log("Dataset resolved:", info);
+            setStatus("🔗 Existing dataset found and resolved");
+            setProgress(30);
+          },
+          onDataSetCreationStarted: (transactionResponse, statusUrl) => {
+            console.log("Dataset creation started:", transactionResponse);
+            console.log("Dataset creation status URL:", statusUrl);
+            setStatus("🏗️ Creating new dataset on blockchain...");
+            setProgress(35);
+          },
+          onDataSetCreationProgress: (status) => {
+            console.log("Dataset creation progress:", status);
+            if (status.transactionSuccess) {
+              setStatus(`⛓️ Dataset transaction confirmed on chain`);
+              setProgress(45);
+            }
+            if (status.serverConfirmed) {
+              setStatus(
+                `🎉 Dataset ready! (${Math.round(status.elapsedMs / 1000)}s)`
+              );
+              setProgress(50);
+            }
+          },
+          onProviderSelected: (provider) => {
+            console.log("Storage provider selected:", provider);
+            setStatus(`🏪 Storage provider selected`);
+          },
+        },
+      });
     const data = new TextEncoder().encode(formData.abstractText);
     const result = await storage.upload(data);
     console.log(`Stored with CommP: ${result.commp}`)
