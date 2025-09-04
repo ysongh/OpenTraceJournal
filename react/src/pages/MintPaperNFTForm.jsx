@@ -7,10 +7,12 @@ import { ethers } from 'ethers';
 import { ETHContext } from '../ETHContext';
 import { useContracts } from '../utils/useContracts';
 import { formatBalance } from '../utils/format';
+import { useSynapse } from '../utils/useSynapse';
 
 export default function MintPaperNFTForm() {
   const { provider, signer } = useContext(ETHContext);
   const { mintPaper } = useContracts();
+  const { depositUSDF, approveUSDF } = useSynapse();
 
   const [usdfc, setusdfc] = useState(0);
   const [payments, setpayments] = useState(0);
@@ -215,18 +217,9 @@ export default function MintPaperNFTForm() {
   const storeString = async () => {
     const synapse = await Synapse.create({ provider });
 
-    // Deposit USDFC tokens (one-time setup)
-    const amount = ethers.parseUnits('10', 18);  // 10 USDFC
-    await synapse.payments.deposit(amount, TOKENS.USDFC);
-
-    // Approve the Pandora service for automated payments
-    const pandoraAddress = CONTRACT_ADDRESSES.PANDORA_SERVICE[synapse.getNetwork()]
-    await synapse.payments.approveService(
-      pandoraAddress,
-      ethers.parseUnits('10', 18),   // Rate allowance: 10 USDFC per epoch
-      ethers.parseUnits('1000', 18)  // Lockup allowance: 1000 USDFC total
-    );
-
+    // await depositUSDF(provider);
+    // await approveUSDF(provider);
+    
     const storage = await synapse.createStorage({
         callbacks: {
           onDataSetResolved: (info) => {
