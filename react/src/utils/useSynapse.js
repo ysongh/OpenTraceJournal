@@ -14,11 +14,12 @@ export const useSynapse = () => {
   const approveUSDF  = async (provider) => {
     const synapse = await Synapse.create({ provider });
 
-    const pandoraAddress = CONTRACT_ADDRESSES.PANDORA_SERVICE[synapse.getNetwork()]
+    const warmStorageAddress = synapse.getWarmStorageAddress()
     await synapse.payments.approveService(
-      pandoraAddress,
+      warmStorageAddress,
       ethers.parseUnits('10', 18),   // Rate allowance: 10 USDFC per epoch
-      ethers.parseUnits('1000', 18)  // Lockup allowance: 1000 USDFC total
+      ethers.parseUnits('1000', 18),  // Lockup allowance: 1000 USDFC total
+      86400n
     );
   };
   

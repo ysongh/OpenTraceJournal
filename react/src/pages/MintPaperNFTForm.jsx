@@ -217,9 +217,6 @@ export default function MintPaperNFTForm() {
   const storeString = async () => {
     const synapse = await Synapse.create({ provider });
 
-    // await depositUSDF(provider);
-    // await approveUSDF(provider);
-    
     const storage = await synapse.createStorage({
         callbacks: {
           onDataSetResolved: (info) => {
@@ -254,7 +251,7 @@ export default function MintPaperNFTForm() {
       });
     const data = new TextEncoder().encode(formData.abstractText);
     const result = await storage.upload(data);
-    console.log(`Stored with CommP: ${result.commp}`)
+    console.log(`Upload complete! PieceCID: ${result.pieceCid}`)
   }
 
   const resetForm = () => {
@@ -324,7 +321,13 @@ export default function MintPaperNFTForm() {
           </div>
 
           <p>{usdfc} USDFC</p>
-          <p>{payments} USDFC</p>
+          <div className="flex items-center">
+            <p className="mr-3">{payments} USDFC</p>
+            <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => approveUSDF(provider)}>
+              Approve
+            </button>
+          </div>
+        
 
           {/* Form */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-8">
