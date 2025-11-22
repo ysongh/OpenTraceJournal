@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {TypesLib} from "blocklock-solidity/src/libraries/TypesLib.sol";
+import "./MockBlocklockReceiver.sol";
 
 /**
  * @title DecentralizedJournal
@@ -12,8 +11,9 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * Authors can mint papers and earn from citations
  * Users pay authors to cite their papers with on-chain proof
  */
-contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {    
-    address public immutable owner;
+contract OldDecentralizedJournal is ReentrancyGuard {
+    MockBlocklockReceiver public immutable mockBlocklockReceiver;
+    address public immutable owner1;
 
     // Token counter for unique paper IDs
     uint256 private _tokenIdCounter;
@@ -29,6 +29,7 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         address author;
         uint256 timestamp;
         string[] keywords;
+        uint256[] requestId;
         string field; // e.g., "synthetic biology", "computer science"
         uint256 citationCount;
         uint256 totalEarnings; // Total earnings from citations
@@ -43,7 +44,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         string citerAuthorName; // Name of the citing author
         uint256 paymentAmount; // Amount paid for citation
         uint256 timestamp;
-        bool isActive; // Can be deactivated if needed
     }
     
     // Mapping from token ID to paper metadata
@@ -64,10 +64,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
     // Citation pricing (can be set per paper or globally)
     mapping(uint256 => uint256) public citationPrices; // paperId => price in wei
     uint256 public defaultCitationPrice = 0.01 ether; // Default price
-    
-    // Platform fee percentage (in basis points, e.g., 500 = 5%)
-    uint256 public platformFeePercent = 500; // 5%
-    uint256 public constant MAX_PLATFORM_FEE = 1000; // 10% max
     
     // Events
     event PaperMinted(
@@ -93,8 +89,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         uint256 price
     );
     
-    event PlatformFeeUpdated(uint256 oldFee, uint256 newFee);
-    
     // Modifiers
     modifier validMetadata(string memory title, string memory abstractText, string memory ipfsHash) {
         require(bytes(title).length > 0, "Title cannot be empty");
@@ -103,13 +97,8 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         _;
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Not the Owner");
-        _;
-    }
-    
-    modifier onlyPaperOwner(uint256 paperId) {
-        require(ownerOf(paperId) == msg.sender, "Not the paper owner");
+    modifier onlyOwner1() {
+        require(msg.sender == owner1, "Not the Owner");
         _;
     }
     
@@ -119,9 +108,11 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
     }
     
     constructor(
-        address _owner
-    ) ERC721("DecentralizedJournal", "DJNL") {
-        owner = _owner;
+        address _owner,
+        address payable _mockBlocklockReceiver
+    ){
+        owner1 = _owner;
+        mockBlocklockReceiver = MockBlocklockReceiver(_mockBlocklockReceiver);
     }
     
     /**
@@ -131,27 +122,17 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
      * @param ipfsHash IPFS hash containing the full paper content
      * @param keywords Array of keywords for the paper
      * @param field The academic field (e.g., "synthetic biology")
-     * @param tokenURI URI for the NFT metadata (optional, can be empty)
      */
     function mintPaper(
         string memory title,
         string memory abstractText,
         string memory ipfsHash,
         string[] memory keywords,
-        string memory field,
-        string memory tokenURI
+        string memory field
     ) external nonReentrant validMetadata(title, abstractText, ipfsHash) {
         // Get next token ID
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter += 1;
-        
-        // Mint the NFT
-        _safeMint(msg.sender, tokenId);
-        
-        // Set token URI if provided
-        if (bytes(tokenURI).length > 0) {
-            _setTokenURI(tokenId, tokenURI);
-        }
         
         // Store paper metadata
         papers[tokenId] = PaperMetadata({
@@ -161,6 +142,7 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
             author: msg.sender,
             timestamp: block.timestamp,
             keywords: keywords,
+            requestId: new uint256[](0),
             field: field,
             citationCount: 0,
             totalEarnings: 0
@@ -205,8 +187,7 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
             citerTitle: citerTitle,
             citerAuthorName: citerAuthorName,
             paymentAmount: msg.value,
-            timestamp: block.timestamp,
-            isActive: true
+            timestamp: block.timestamp
         });
         
         // Add to paper's citations
@@ -219,9 +200,7 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
         papers[paperId].citationCount += 1;
         papers[paperId].totalEarnings += msg.value;
         
-        // Calculate platform fee
-        uint256 platformFee = (msg.value * platformFeePercent) / 10000;
-        uint256 authorPayment = msg.value - platformFee;
+        uint256 authorPayment = msg.value;
         
         // Pay the author
         address payable author = payable(papers[paperId].author);
@@ -249,11 +228,22 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
      */
     function setCitationPrice(uint256 paperId, uint256 price) 
         external 
-        paperExists(paperId) 
-        onlyPaperOwner(paperId) 
+        paperExists(paperId)
     {
         citationPrices[paperId] = price;
         emit CitationPriceSet(paperId, price);
+    }
+
+    function createTimelockRequestWithDirectFunding(
+        uint256 paperId,
+        uint32 callbackGasLimit,
+        bytes calldata condition,
+        TypesLib.Ciphertext calldata encryptedData
+    ) external payable returns (uint256, uint256) {
+        (uint256 _requestId, uint256 requestPrice) = mockBlocklockReceiver.createTimelockRequestWithDirectFunding{value: msg.value}(callbackGasLimit, condition, encryptedData);
+        // store request id
+        papers[paperId].requestId.push(_requestId);
+        return (_requestId, requestPrice);
     }
     
     /**
@@ -306,14 +296,6 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
     }
     
     /**
-     * @dev Get paper keywords by token ID
-     * @param tokenId The paper's token ID
-     */
-    function getPaperKeywords(uint256 tokenId) external view returns (string[] memory) {
-        return papers[tokenId].keywords;
-    }
-    
-    /**
      * @dev Get total number of papers minted
      */
     function getTotalPapers() external view returns (uint256) {
@@ -326,64 +308,15 @@ contract DecentralizedJournal is ERC721, ERC721URIStorage, ReentrancyGuard {
     function getTotalCitations() external view returns (uint256) {
         return _citationIdCounter;
     }
-    
-    // Admin Functions
-    
-    /**
-     * @dev Set default citation price (only owner)
-     * @param price New default price in wei
-     */
-    function setDefaultCitationPrice(uint256 price) external onlyOwner {
-        defaultCitationPrice = price;
-    }
-    
-    /**
-     * @dev Set platform fee percentage (only owner)
-     * @param feePercent Fee percentage in basis points (e.g., 500 = 5%)
-     */
-    function setPlatformFeePercent(uint256 feePercent) external onlyOwner {
-        require(feePercent <= MAX_PLATFORM_FEE, "Fee too high");
-        uint256 oldFee = platformFeePercent;
-        platformFeePercent = feePercent;
-        emit PlatformFeeUpdated(oldFee, feePercent);
-    }
-    
+
     /**
      * @dev Withdraw platform fees (only owner)
      */
-    function withdrawPlatformFees() external onlyOwner {
+    function withdrawPlatformFees() external onlyOwner1 {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
         
-        (bool success, ) = payable(owner).call{value: balance}("");
+        (bool success, ) = payable(owner1).call{value: balance}("");
         require(success, "Withdrawal failed");
-    }
-    
-    /**
-     * @dev Deactivate a citation (only owner, for moderation)
-     * @param citationId The citation ID to deactivate
-     */
-    function deactivateCitation(uint256 citationId) external onlyOwner {
-        require(citationId < _citationIdCounter, "Citation does not exist");
-        citations[citationId].isActive = false;
-    }
-    
-    // Override functions
-    function tokenURI(uint256 tokenId) 
-        public 
-        view 
-        override(ERC721, ERC721URIStorage) 
-        returns (string memory) 
-    {
-        return super.tokenURI(tokenId);
-    }
-    
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
     }
 }
