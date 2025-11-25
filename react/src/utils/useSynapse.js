@@ -1,7 +1,15 @@
-import { Synapse, TOKENS, CONTRACT_ADDRESSES } from "@filoz/synapse-sdk";
+import { Synapse, RPC_URLS, TOKENS, CONTRACT_ADDRESSES } from "@filoz/synapse-sdk";
 import { ethers } from 'ethers';
 
 export const useSynapse = () => {
+  const initializeSynapse = async () => {
+    const synapse = await Synapse.create({
+      privateKey: import.meta.env.VITE_PRIVATE_KEY,
+      rpcURL: RPC_URLS.calibration.http,
+    })
+    console.log(synapse);
+  }
+ 
   const depositUSDF = async (provider) => {
     const synapse = await Synapse.create({ provider });
 
@@ -24,6 +32,7 @@ export const useSynapse = () => {
   };
   
   return {
+    initializeSynapse,
     depositUSDF,
     approveUSDF
   };
