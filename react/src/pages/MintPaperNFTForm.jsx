@@ -12,7 +12,7 @@ import { useSynapse } from '../utils/useSynapse';
 export default function MintPaperNFTForm() {
   const { provider, signer } = useContext(ETHContext);
   const { mintPaper } = useContracts();
-  const { depositUSDF, approveUSDF, initializeSynapse } = useSynapse();
+  const { depositUSDF, approveUSDF, depositAndApproveUSDF, initializeSynapse } = useSynapse();
 
   const [usdfc, setusdfc] = useState(0);
   const [payments, setpayments] = useState(0);
@@ -323,8 +323,8 @@ export default function MintPaperNFTForm() {
           <p>{usdfc} USDFC</p>
           <div className="flex items-center">
             <p className="mr-3">{payments} USDFC</p>
-            <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => approveUSDF(provider)}>
-              Approve
+            <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => depositAndApproveUSDF()}>
+              Deposit And Approve USDF
             </button>
             <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => initializeSynapse()}>
               Initialize Synapse

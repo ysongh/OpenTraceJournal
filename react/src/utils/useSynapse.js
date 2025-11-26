@@ -1,4 +1,4 @@
-import { Synapse, RPC_URLS, TOKENS, CONTRACT_ADDRESSES } from "@filoz/synapse-sdk";
+import { Synapse, RPC_URLS, TOKENS, TIME_CONSTANTS, CONTRACT_ADDRESSES } from "@filoz/synapse-sdk";
 import { ethers } from 'ethers';
 
 export const useSynapse = () => {
@@ -7,11 +7,27 @@ export const useSynapse = () => {
       privateKey: import.meta.env.VITE_PRIVATE_KEY,
       rpcURL: RPC_URLS.calibration.http,
     })
-    console.log(synapse);
+    return synapse;
   }
+
+  const depositAndApproveUSDF = async () => {
+    const synapse = await initializeSynapse();
+    console.log(synapse);
+
+    const depositAmount = ethers.parseUnits("2.5", 18);
+    const tx = await synapse.payments.depositWithPermitAndApproveOperator(
+      depositAmount, // 2.5 USDFC (covers 1TiB of storage for 30 days)
+      synapse.getWarmStorageAddress(),
+      ethers.MaxUint256,
+      ethers.MaxUint256,
+      TIME_CONSTANTS.EPOCHS_PER_MONTH,
+    );
+    await tx.wait();
+    console.log(`✅ USDFC deposit and Warm Storage service approval successful!`);
+  };
  
   const depositUSDF = async (provider) => {
-    const synapse = await Synapse.create({ provider });
+    const synapse = await initializeSynapse();
 
     // Deposit USDFC tokens (one-time setup)
     const amount = ethers.parseUnits('10', 18);  // 10 USDFC
@@ -20,7 +36,7 @@ export const useSynapse = () => {
 
   // Approve the Pandora service for automated payments
   const approveUSDF  = async (provider) => {
-    const synapse = await Synapse.create({ provider });
+     const synapse = await initializeSynapse();
 
     const warmStorageAddress = synapse.getWarmStorageAddress()
     await synapse.payments.approveService(
@@ -33,6 +49,7 @@ export const useSynapse = () => {
   
   return {
     initializeSynapse,
+    depositAndApproveUSDF,
     depositUSDF,
     approveUSDF
   };
