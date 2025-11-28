@@ -12,7 +12,7 @@ import { useSynapse } from '../utils/useSynapse';
 export default function MintPaperNFTForm() {
   const { provider, signer } = useContext(ETHContext);
   const { mintPaper } = useContracts();
-  const { depositUSDF, approveUSDF, depositAndApproveUSDF, initializeSynapse } = useSynapse();
+  const { depositUSDF, approveUSDF, depositAndApproveUSDF, uploadText } = useSynapse();
 
   const [usdfc, setusdfc] = useState(0);
   const [payments, setpayments] = useState(0);
@@ -326,9 +326,6 @@ export default function MintPaperNFTForm() {
             <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => depositAndApproveUSDF()}>
               Deposit And Approve USDF
             </button>
-            <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => initializeSynapse()}>
-              Initialize Synapse
-            </button>
           </div>
         
 
@@ -389,7 +386,7 @@ export default function MintPaperNFTForm() {
               </div>
 
               <button
-                  onClick={storeString}
+                  onClick={() => uploadText(formData.abstractText)}
                   className={`w-full py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 ${
                     isSubmitting
                       ? 'bg-gray-600 cursor-not-allowed'
@@ -399,7 +396,7 @@ export default function MintPaperNFTForm() {
                   {isSubmitting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Minting NFT...</span>
+                      <span>Storing Abstract Text...</span>
                     </>
                   ) : (
                     <>

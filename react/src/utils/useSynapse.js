@@ -12,7 +12,6 @@ export const useSynapse = () => {
 
   const depositAndApproveUSDF = async () => {
     const synapse = await initializeSynapse();
-    console.log(synapse);
 
     const depositAmount = ethers.parseUnits("2.5", 18);
     const tx = await synapse.payments.depositWithPermitAndApproveOperator(
@@ -25,6 +24,16 @@ export const useSynapse = () => {
     await tx.wait();
     console.log(`✅ USDFC deposit and Warm Storage service approval successful!`);
   };
+
+  const uploadText = async (text) => {
+    const synapse = await initializeSynapse();
+
+    const data = new TextEncoder().encode(text);
+    const { pieceCid, size } = await synapse.storage.upload(data)
+    console.log(`✅ Upload complete!`);
+    console.log(`PieceCID: ${pieceCid}`);
+    console.log(`Size: ${size} bytes`);
+  }
  
   const depositUSDF = async (provider) => {
     const synapse = await initializeSynapse();
@@ -51,7 +60,8 @@ export const useSynapse = () => {
     initializeSynapse,
     depositAndApproveUSDF,
     depositUSDF,
-    approveUSDF
+    approveUSDF,
+    uploadText
   };
 
 }
