@@ -34,6 +34,16 @@ export const useSynapse = () => {
     console.log(`PieceCID: ${pieceCid}`);
     console.log(`Size: ${size} bytes`);
   }
+
+  const downloadText = async (pieceCid) => {
+    const synapse = await initializeSynapse();
+
+    const bytes = await synapse.storage.download(pieceCid)
+    const decodedText = new TextDecoder().decode(bytes);
+    console.log(`✅ Download successful!`);
+    console.log(`Downloaded data: ${decodedText}\n`);
+    console.log("🎉 Data storage and retrieval successful!");
+  }
  
   const depositUSDF = async (provider) => {
     const synapse = await initializeSynapse();
@@ -61,7 +71,8 @@ export const useSynapse = () => {
     depositAndApproveUSDF,
     depositUSDF,
     approveUSDF,
-    uploadText
+    uploadText,
+    downloadText
   };
 
 }
