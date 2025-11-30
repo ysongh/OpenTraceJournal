@@ -12,7 +12,7 @@ import { useSynapse } from '../utils/useSynapse';
 export default function MintPaperNFTForm() {
   const { provider, signer } = useContext(ETHContext);
   const { mintPaper } = useContracts();
-  const { depositUSDF, approveUSDF, depositAndApproveUSDF, uploadText, downloadText } = useSynapse();
+  const { depositAndApproveUSDF, uploadText, downloadText } = useSynapse();
 
   const [usdfc, setusdfc] = useState(0);
   const [payments, setpayments] = useState(0);
@@ -213,46 +213,6 @@ export default function MintPaperNFTForm() {
       setIsSubmitting(false);
     }
   };
-
-  const storeString = async () => {
-    const synapse = await Synapse.create({ provider });
-
-    const storage = await synapse.createStorage({
-        callbacks: {
-          onDataSetResolved: (info) => {
-            console.log("Dataset resolved:", info);
-            setStatus("🔗 Existing dataset found and resolved");
-            setProgress(30);
-          },
-          onDataSetCreationStarted: (transactionResponse, statusUrl) => {
-            console.log("Dataset creation started:", transactionResponse);
-            console.log("Dataset creation status URL:", statusUrl);
-            setStatus("🏗️ Creating new dataset on blockchain...");
-            setProgress(35);
-          },
-          onDataSetCreationProgress: (status) => {
-            console.log("Dataset creation progress:", status);
-            if (status.transactionSuccess) {
-              setStatus(`⛓️ Dataset transaction confirmed on chain`);
-              setProgress(45);
-            }
-            if (status.serverConfirmed) {
-              setStatus(
-                `🎉 Dataset ready! (${Math.round(status.elapsedMs / 1000)}s)`
-              );
-              setProgress(50);
-            }
-          },
-          onProviderSelected: (provider) => {
-            console.log("Storage provider selected:", provider);
-            setStatus(`🏪 Storage provider selected`);
-          },
-        },
-      });
-    const data = new TextEncoder().encode(formData.abstractText);
-    const result = await storage.upload(data);
-    console.log(`Upload complete! PieceCID: ${result.pieceCid}`)
-  }
 
   const resetForm = () => {
     setFormData({

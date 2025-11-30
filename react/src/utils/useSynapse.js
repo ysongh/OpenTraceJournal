@@ -44,33 +44,10 @@ export const useSynapse = () => {
     console.log(`Downloaded data: ${decodedText}\n`);
     console.log("🎉 Data storage and retrieval successful!");
   }
- 
-  const depositUSDF = async (provider) => {
-    const synapse = await initializeSynapse();
-
-    // Deposit USDFC tokens (one-time setup)
-    const amount = ethers.parseUnits('10', 18);  // 10 USDFC
-    await synapse.payments.deposit(amount, TOKENS.USDFC);
-  };
-
-  // Approve the Pandora service for automated payments
-  const approveUSDF  = async (provider) => {
-     const synapse = await initializeSynapse();
-
-    const warmStorageAddress = synapse.getWarmStorageAddress()
-    await synapse.payments.approveService(
-      warmStorageAddress,
-      ethers.parseUnits('10', 18),   // Rate allowance: 10 USDFC per epoch
-      ethers.parseUnits('1000', 18),  // Lockup allowance: 1000 USDFC total
-      86400n
-    );
-  };
   
   return {
     initializeSynapse,
     depositAndApproveUSDF,
-    depositUSDF,
-    approveUSDF,
     uploadText,
     downloadText
   };
