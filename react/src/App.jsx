@@ -6,7 +6,6 @@ import Landing from './pages/Landing';
 import MintPaperNFTForm from './pages/MintPaperNFTForm';
 import PapersList from './pages/PapersList';
 import PaperDetail from './pages/PaperDetail';
-import CreateKey from './pages/CreateKey';
 import PaperSubmissionForm from './pages/PaperSubmissionForm';
 
 function App() {
@@ -16,9 +15,6 @@ function App() {
       <HashRouter>
         <Navbar />
         <Routes>
-          <Route
-            path="/createkey"
-            element={<CreateKey />} />
           <Route
             path="/mintpapernft"
             element={<MintPaperNFTForm />} />

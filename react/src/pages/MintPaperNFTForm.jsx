@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FileText, Upload, Plus, X, CheckCircle, AlertCircle, Hash, Tag, BookOpen, Globe, Zap, ArrowRight } from 'lucide-react';
-import lighthouse from "@lighthouse-web3/sdk";
 import { Synapse, TOKENS, CONTRACT_ADDRESSES } from "@filoz/synapse-sdk";
 import { ethers } from 'ethers';
 
@@ -168,16 +167,6 @@ export default function MintPaperNFTForm() {
 
     const fakeHash = `Qm${Math.random().toString(36).substr(2, 44)}`;
     handleInputChange('ipfsHash', fakeHash);
-
-    if (files && files[0]) {
-      // Simulate IPFS upload
-      const apiKey = import.meta.env.VITE_LIGHTHOUSE_APIKEY;
-
-      const output = await lighthouse.upload(files, apiKey, null, progressCallback);
-      console.log('Visit at https://gateway.lighthouse.storage/ipfs/' + output.data.Hash);
-
-      //handleInputChange('ipfsHash', output.data.Hash);
-    }
   };
 
   const handleSubmit = async () => {
