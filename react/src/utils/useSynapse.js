@@ -29,16 +29,18 @@ export const useSynapse = () => {
     const synapse = await initializeSynapse();
 
     const data = new TextEncoder().encode(text);
-    const { pieceCid, size } = await synapse.storage.upload(data)
+    const { pieceCid, size } = await synapse.storage.upload(data);
     console.log(`✅ Upload complete!`);
     console.log(`PieceCID: ${pieceCid}`);
     console.log(`Size: ${size} bytes`);
+
+    return pieceCid;
   }
 
   const downloadText = async (pieceCid) => {
     const synapse = await initializeSynapse();
 
-    const bytes = await synapse.storage.download(pieceCid)
+    const bytes = await synapse.storage.download(pieceCid);
     const decodedText = new TextDecoder().decode(bytes);
     console.log(`✅ Download successful!`);
     console.log(`Downloaded data: ${decodedText}\n`);

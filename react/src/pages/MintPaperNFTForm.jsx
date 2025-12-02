@@ -29,8 +29,6 @@ export default function MintPaperNFTForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState("");
 
   const academicFields = [
     'Synthetic Biology',
@@ -162,11 +160,36 @@ export default function MintPaperNFTForm() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
-    const files = e.dataTransfer.files;
 
-    const fakeHash = `Qm${Math.random().toString(36).substr(2, 44)}`;
-    handleInputChange('ipfsHash', fakeHash);
+    const files = e.dataTransfer.files;
+  
+    if (files && files.length > 0) {
+      const file = files[0];
+      
+      try {
+        setIsSubmitting(true);
+        
+        // Read the file content
+        const fileContent = await file.text();
+        
+        // Upload to Synapse/IPFS
+        const cid = await uploadText(fileContent);
+        
+        console.log('File uploaded successfully. CID:', cid);
+        
+        // Set the IPFS hash in the form
+        handleInputChange('ipfsHash', cid);
+        
+      } catch (error) {
+        console.error('File upload failed:', error);
+        setErrors(prev => ({ 
+          ...prev, 
+          ipfsHash: 'File upload failed. Please try again.' 
+        }));
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
   };
 
   const handleSubmit = async () => {
@@ -275,7 +298,7 @@ export default function MintPaperNFTForm() {
             <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => depositAndApproveUSDF()}>
               Deposit And Approve USDF
             </button>
-           <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => downloadText("bafkzcibcaebzkth2q5mhk52mfdqaamnaeo6xku7naxloroj7mekow3oahtraqai")}>
+           <button className="bg-gradient-to-r from-purple-500 to-blue-500 p-2" onClick={() => downloadText("bafkzcibdzyqqtr2ljsfjkvsd2sid5suzd6xwbg5qijpc7zwfbifnozmnhlhyzsy5")}>
               Download
             </button>
           </div>
@@ -377,7 +400,7 @@ export default function MintPaperNFTForm() {
                     <p className="text-gray-300 mb-2">Drag and drop your paper file here</p>
                     <p className="text-gray-500 text-sm">We'll automatically upload to IPFS and generate the hash</p>
                   </div>
-                  {/* <div className="text-center text-gray-400">or</div>
+                  <div className="text-center text-gray-400">or</div>
                   <input
                     type="text"
                     value={formData.ipfsHash}
@@ -386,7 +409,7 @@ export default function MintPaperNFTForm() {
                     className={`w-full p-4 rounded-lg bg-white/10 border ${
                       errors.ipfsHash ? 'border-red-400' : 'border-white/20'
                     } focus:border-purple-400 focus:outline-none transition-colors text-white placeholder-gray-400 font-mono text-sm`}
-                  /> */}
+                  />
                 </div>
                 {errors.ipfsHash && (
                   <p className="mt-2 text-red-400 text-sm flex items-center space-x-1">
