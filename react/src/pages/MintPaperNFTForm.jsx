@@ -400,16 +400,7 @@ export default function MintPaperNFTForm() {
                     <p className="text-gray-300 mb-2">Drag and drop your paper file here</p>
                     <p className="text-gray-500 text-sm">We'll automatically upload to IPFS and generate the hash</p>
                   </div>
-                  <div className="text-center text-gray-400">or</div>
-                  <input
-                    type="text"
-                    value={formData.ipfsHash}
-                    onChange={(e) => handleInputChange('ipfsHash', e.target.value)}
-                    placeholder="Enter IPFS hash manually (e.g., QmYourHashHere...)"
-                    className={`w-full p-4 rounded-lg bg-white/10 border ${
-                      errors.ipfsHash ? 'border-red-400' : 'border-white/20'
-                    } focus:border-purple-400 focus:outline-none transition-colors text-white placeholder-gray-400 font-mono text-sm`}
-                  />
+                  <p>{formData.ipfsHash}</p>
                 </div>
                 {errors.ipfsHash && (
                   <p className="mt-2 text-red-400 text-sm flex items-center space-x-1">
